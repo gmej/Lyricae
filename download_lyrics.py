@@ -1,3 +1,5 @@
+# Thanks to https://github.com/sgiammy/emotion-patterns-in-music-playlists
+
 import lyricwikia
 import argparse
 import sys
