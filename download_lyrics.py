@@ -11,6 +11,7 @@ import pandas
 from progress.bar import Bar # progress bar
 
 SPACE_CHARACHTER_SUBSTITUTION = '.'
+SLASH_CHARACHTER_SUBSTITUTION = '-'
 LOCAL_PATH = os.path.abspath('.')
 
 parser = argparse.ArgumentParser(
@@ -24,7 +25,7 @@ parser.add_argument('-f', '--force', action='store_true', help='Force override l
 
 args = parser.parse_args()
 
-LYRICS_PATH = './lyrics'
+LYRICS_PATH = './lyrics_lyricwikia'
 
 LOG_FILE = '.'.join([sys.argv[0], 'log'])
 try:
@@ -53,10 +54,12 @@ def lyric_entries_generator(path):
     for idx, row in dataFrame.iterrows(): 
         yield row
 
+
+
 def download_lyric(song):
     try:
         filename = '_'.join([song['Emotion'], song['Artist'], song['Song']])
-        filename = filename.replace('/', '-')  # The '/' should never appear
+        filename = filename.replace('/', SLASH_CHARACHTER_SUBSTITUTION)  # The '/' should never appear
         filename = filename.replace(' ', SPACE_CHARACHTER_SUBSTITUTION)  # The '/' should never appear
         
         if(not args.force and os.path.isfile(LOCAL_PATH + '/' + filename)):
