@@ -2,7 +2,7 @@
 
 pandas_amazon_example/
 lyrics_lyricwikia/
-
+datasets/heavy/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
