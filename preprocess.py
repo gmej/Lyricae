@@ -11,8 +11,7 @@ from nltk.corpus import stopwords
 from nltk import pos_tag, word_tokenize
 from nltk.chunk.regexp import *
 from nltk import pos_tag, word_tokenize
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+
 
 import nltk
 
@@ -51,12 +50,12 @@ def stem(lyric, stemmer='porter'):
     end = time.time()
     print("Execution time: "  + str(end - start))
 
-def lemmatize(words):
-    wordnet = WordNetLemmatizer()
-    lemmas = [wordnet.lemmatize(word, pos='v') for word in words] # 'j' adj | 'n' noun | 'v' verb | ' r' adv
+# def lemmatize(words):
+#     wordnet = WordNetLemmatizer()
+#     lemmas = [wordnet.lemmatize(word, pos='v') for word in words] # 'j' adj | 'n' noun | 'v' verb | ' r' adv
     
-    #print("WordNet lemmatization: " + lemmas.__str__())
-    return lemmas
+#     #print("WordNet lemmatization: " + lemmas.__str__())
+#     return lemmas
 
 def remove_stopwords(words):
     stoplist = stopwords.words('english')
@@ -102,7 +101,7 @@ def parse_and_chunk(lyric):
     print(extractTrees(chunks_np, 'NP'))
     print(extractStrings(chunks_np))
     #print(chunks_np)
-    #chunks_np.draw()
+    chunks_np.draw()
 
 def extractTrees(parsed_tree, category='NP'):
     return list(parsed_tree.subtrees(filter=lambda x: x.label()==category))
@@ -110,31 +109,31 @@ def extractTrees(parsed_tree, category='NP'):
 def extractStrings(parsed_tree, category='NP'):
     return [" ".join(word for word, pos in vp.leaves()) for vp in extractTrees(parsed_tree, category)]
     
-def vectorize(lyric):
-    vectorizer = CountVectorizer(analyzer = "word", max_features = 5000) 
-    vectors = vectorizer.fit_transform([lyric])
-    print(vectors.toarray())
-    print(vectorizer.get_feature_names())
-    #distance
+# def vectorize(lyric):
+#     vectorizer = CountVectorizer(analyzer = "word", max_features = 5000) 
+#     vectors = vectorizer.fit_transform([lyric])
+#     print(vectors.toarray())
+#     print(vectorizer.get_feature_names())
+#     #distance
 
 
-def bigram_vectors(lyric):
-    vectorizer = CountVectorizer(analyzer="word", stop_words='english', ngram_range=[2,2]) 
-    vectors = vectorizer.fit_transform([lyric])
-    print(vectors.toarray())
-    print(vectorizer.get_feature_names())
+# def bigram_vectors(lyric):
+#     vectorizer = CountVectorizer(analyzer="word", stop_words='english', ngram_range=[2,2]) 
+#     vectors = vectorizer.fit_transform([lyric])
+#     print(vectors.toarray())
+#     print(vectorizer.get_feature_names())
 
-def tfidf_vector(lyric):
+# def tfidf_vector(lyric):
 
-    vectorizer = TfidfVectorizer(analyzer="word", stop_words='english')
-    vectors = vectorizer.fit_transform([lyric])
-    vectorizer.get_feature_names()
-    print(vectors.toarray())
-    cosine_similarity(vectors)
-    query = ["sex blood"]
-    #cosine_similarity
-    vector_query = vectorizer.transform(query)
-    print(cosine_similarity(vector_query, vectors))
+#     vectorizer = TfidfVectorizer(analyzer="word", stop_words='english')
+#     vectors = vectorizer.fit_transform([lyric])
+#     vectorizer.get_feature_names()
+#     print(vectors.toarray())
+#     cosine_similarity(vectors)
+#     query = ["sex blood"]
+#     #cosine_similarity
+#     vector_query = vectorizer.transform(query)
+#     print(cosine_similarity(vector_query, vectors))
 
 def preprocess(lyric):
     lyric = lyric.lower()
@@ -153,15 +152,13 @@ def preprocess(lyric):
     #Syntactic Processing
     POS_tag(clean_lemmas)
     return clean_lemmas, string
-    
+
 
 #lyric = open_lyric('')
-lyric = open_lyric('./lyrics_lyricwikia/happy_The.Red.Hot.Chili.Peppers_Blood.Sugar.Sex.Magik')
-#lyric = open_lyric('./lyrics_lyricwikia/angry_Marilyn.Manson_Sweet.Dreams.')
+#lyric = open_lyric('./lyrics_lyricwikia/happy_The.Red.Hot.Chili.Peppers_Blood.Sugar.Sex.Magik')
+lyric = open_lyric('./lyrics_lyricwikia/angry_Marilyn.Manson_Sweet.Dreams.')
 #lyric = open_lyric("./lyrics_lyricwikia/happy_Queen_Thank.God.It's.Christmas")
 print(lyric)
 #lemmas, string = preprocess(lyric)
-#parse_and_chunk(lyric)
-#bigram_vectors(lyric)
-#vectorize(lyric)
-tfidf_vector(lyric)
+parse_and_chunk(lyric)
+#stem(lyric, 'lancaster')

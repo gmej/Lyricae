@@ -58,9 +58,9 @@ def lyric_entries_generator(path):
 
 def download_lyric(song):
     try:
-        filename = '_'.join([song['Emotion'], song['Artist'], song['Song']])
+        filename = '_'.join([song['Index'], song['Emotion'], song['Artist'], song['Song']])
         filename = filename.replace('/', SLASH_CHARACHTER_SUBSTITUTION)  # The '/' should never appear
-        filename = filename.replace(' ', SPACE_CHARACHTER_SUBSTITUTION)  # The '/' should never appear
+        filename = filename.replace(' ', SPACE_CHARACHTER_SUBSTITUTION) 
         
         if(not args.force and os.path.isfile(LOCAL_PATH + '/' + filename)):
             print('exists')
