@@ -58,9 +58,10 @@ def lyric_entries_generator(path):
 
 def download_lyric(song):
     try:
-        filename = '_'.join([song['Index'], song['Emotion'], song['Artist'], song['Song']])
-        filename = filename.replace('/', SLASH_CHARACHTER_SUBSTITUTION)  # The '/' should never appear
-        filename = filename.replace(' ', SPACE_CHARACHTER_SUBSTITUTION) 
+        filename = str(song['Index'])
+        #filename = '_'.join([song['Index'], song['Emotion'], song['Artist'], song['Song']])
+        #filename = filename.replace('/', SLASH_CHARACHTER_SUBSTITUTION)  # The '/' should never appear
+        #filename = filename.replace(' ', SPACE_CHARACHTER_SUBSTITUTION) 
         
         if(not args.force and os.path.isfile(LOCAL_PATH + '/' + filename)):
             print('exists')
@@ -84,7 +85,7 @@ def err(msg):
 
 
 if __name__ == '__main__':
-    totalTitles = count_songs(args.input)
+    totalTitles = count_songs(args.input or "datasets/MoodyLyrics.csv")
     print(str(totalTitles) + ' canciones')
 
     # Create output directory
@@ -93,7 +94,8 @@ if __name__ == '__main__':
     count = 0
     errorCount = 0
     bar = Bar('Downloading lyrics', max = int(totalTitles))
-    for lyric in lyric_entries_generator(args.input):
+    #for lyric in lyric_entries_generator(args.input):
+    for lyric in lyric_entries_generator('datasets/MoodyLyrics.csv'):
         if not download_lyric(lyric):
             errorCount += 1
         count +=1
