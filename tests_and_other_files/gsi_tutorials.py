@@ -50,12 +50,11 @@ def stem(lyric, stemmer='porter'):
     end = time.time()
     print("Execution time: "  + str(end - start))
 
-# def lemmatize(words):
-#     wordnet = WordNetLemmatizer()
-#     lemmas = [wordnet.lemmatize(word, pos='v') for word in words] # 'j' adj | 'n' noun | 'v' verb | ' r' adv
-    
-#     #print("WordNet lemmatization: " + lemmas.__str__())
-#     return lemmas
+def lemmatize(words):
+    wordnet = WordNetLemmatizer()
+    lemmas = [wordnet.lemmatize(word, pos='v') for word in words] # 'j' adj | 'n' noun | 'v' verb | ' r' adv
+    #print("WordNet lemmatization: " + lemmas.__str__())
+    return lemmas
 
 def remove_stopwords(words):
     stoplist = stopwords.words('english')
