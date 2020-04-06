@@ -1,12 +1,11 @@
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 from nltk.util import bigrams
-from collections import Counter
 import pandas as pd
 import numpy as np
 import os
 import time
 import string
+from functions.lyrics_functions import *
+
 
 #NUMBER_OF_SONGS = len(os.listdir('./lyrics_lyricwikia/'))
 INITIAL_NUMBER_OF_SONGS = 5000
@@ -14,120 +13,52 @@ MINIMUM_WORD_REPETITION = 50
 MINIMUM_BIGRAM_REPETITION = 50
 FINAL_NUMBER_OF_SONGS = INITIAL_NUMBER_OF_SONGS
 
-def open_lyric(file_path):
-    with open(file_path) as f:
-        return f.read()
+LYRICS_DATASET_PATH = './datasets/MoodyLyrics.csv'
 
-
-def get_words(lyric):
-    return word_tokenize(lyric)
-
-
-def remove_stopwords(words):
-    stoplist = stopwords.words('english')
-    return [w for w in words if w not in stoplist]
-
-
-def remove_punctuation(words):
-    punctuation = set(string.punctuation)
-    return [w for w in words if  w not in punctuation]
-
-
-def preprocess_for_bags(lyric):
-    lyric = lyric.lower()
-    lyric = lyric.replace("\r", '\n')
-    lyric = lyric.replace("\r\n", '\n')
-    lyric = lyric.replace("\r\n", '\n')
-    words = get_words(lyric)
-    words = remove_stopwords(words) # i, you, me...
-    clean_words = remove_punctuation(words)
-    return clean_words
-
-
-def preprocess_for_bigrams(lyric):
-    lyric = lyric.lower()
-    lyric = lyric.replace("\r", '\n')
-    lyric = lyric.replace("\r\n", '\n')
-    lyric = lyric.replace("\r\n", '\n')
-    words = get_words(lyric)
-    clean_words = remove_punctuation(words)
-    return clean_words
-
-
-def get_lyric(index):
-    try:
-        f = open('./lyrics_lyricwikia/' + index)
-        return f.read()
-    except FileNotFoundError:
-        return None
-
-
-def get_df_from_lyrics_csv():    
-    csv_df = pd.read_csv('./datasets/MoodyLyrics.csv', na_values=['.'])
+def read_csv_as_df(path: str) -> pd.DataFrame:    
+    csv_df = pd.read_csv(path, na_values=['.'])
     return csv_df.head(INITIAL_NUMBER_OF_SONGS)
 
-# mode can be "bags" or "bigrams"
-def insert_lyrics_to_df(df: pd.DataFrame, mode = "bags"):
-    global INITIAL_NUMBER_OF_SONGS
-    
-    df.index += 1 # Start index = 1
-    lyrics = []
-    empty_lyrics = []
-    
-    if(INITIAL_NUMBER_OF_SONGS > len(df.index)):
-        INITIAL_NUMBER_OF_SONGS = len(df.index)
-    
-    for i in range(1, INITIAL_NUMBER_OF_SONGS + 1):
-        lyric = get_lyric("ML" + str(i))
-        if(lyric):
-            if(mode == "bags"):
-                lyric = preprocess_for_bags(lyric)
-            else:
-                lyric = preprocess_for_bigrams(lyric)      
-        else:
-            empty_lyrics.append("ML" + str(i))
-        lyrics.append(lyric)
-    
-    df.insert(3, "Lyric", lyrics, True)
-    
-    return df, empty_lyrics
 
-def get_lyrics_list():
+def insert_column_to_df(df: pd.DataFrame, name: str, values: list, pos: int) -> pd.DataFrame:
+    df.insert(pos, name, values, True)
+    return df
+
+
+def get_lyrics_df(mode: str) -> pd.DataFrame:
     global INITIAL_NUMBER_OF_SONGS
+    
+    NUMBER_OF_SONGS_IN_FOLDER = len(os.listdir('./lyrics_lyricwikia/'))
+    if(INITIAL_NUMBER_OF_SONGS > NUMBER_OF_SONGS_IN_FOLDER):
+        INITIAL_NUMBER_OF_SONGS = NUMBER_OF_SONGS_IN_FOLDER
     
     lyrics_list = []
     empty_lyrics = []
-    
+    data = []
     for i in range(1, INITIAL_NUMBER_OF_SONGS + 1):
-        lyric = get_lyric("ML" + str(i))
-        #print(lyric)
-        #print(' |||||||||||||||||||||||||||||||||||||| ')
+        index = "ML" + str(i)
+        lyric = open_lyric_from_index(index)
         if(lyric):
-            lyric = preprocess_for_bigrams(lyric)      
+            lyric = preprocess(lyric, mode)
         else:
             empty_lyrics.append("ML" + str(i))
         lyrics_list.append(lyric)
-    
-    
-    return lyrics_list
+        data.append([index, lyric])
+    return pd.DataFrame(data, columns=["index", "lyric"]), lyrics_list, empty_lyrics
 
-def extract_word_list_from_df(df: pd.DataFrame):
+
+def extract_total_word_list_from_df(df: pd.DataFrame) -> list:
     return [item for sublist in df['Lyric'].tolist() for item in sublist] 
 
 
-def word_bags(emotion_df: pd.DataFrame):
-    
-    #print(emotion_df.loc[emotion_df['Index'] == 'ML417'])
-    #print(emotion_df[416:419])
-    #print(emotion_df.loc[[412, 417, 420, 423], :])
-    word_list = extract_word_list_from_df(emotion_df) 
+def create_word_bag(emotion_df: pd.DataFrame) -> Counter:
+    word_list = extract_total_word_list_from_df(emotion_df) 
     counter = Counter()
     counter.update(word_list)
-    counter = cut_bag(counter, MINIMUM_WORD_REPETITION)
     return counter
 
 
-def cut_bag(bag: Counter, minimum_repetitions: int):
+def cut_bag(bag: Counter, minimum_repetitions: int) -> Counter:
     return Counter(el for el in bag.elements() if bag[el] >= minimum_repetitions)
 
 
@@ -137,7 +68,7 @@ def get_word_repetitions(counter: Counter):
         word_repetitions[word] = counter[word]
     return word_repetitions
 
-        
+
 def get_file_ocurrences(df: pd.DataFrame, counter: Counter): 
     list_of_lyrics = df['Lyric'].tolist()
     ocurrences = {}
@@ -147,7 +78,7 @@ def get_file_ocurrences(df: pd.DataFrame, counter: Counter):
             for w in file:
                 if(word == w):
                     n += 1
-                    break;
+                    break
         ocurrences[word] = n
     return ocurrences
 
@@ -162,7 +93,8 @@ def calculate_weights(file_ocurrences, word_repetitions):
  
     
 def get_words_data(emotion_df: pd.DataFrame):
-    emotion_word_counter = word_bags(emotion_df)
+    emotion_word_counter = create_word_bag(emotion_df)
+    emotion_word_counter = cut_bag(emotion_word_counter, MINIMUM_WORD_REPETITION)
 
     file_ocurrences = get_file_ocurrences(emotion_df, emotion_word_counter)
     word_repetitions = get_word_repetitions(emotion_word_counter)
@@ -182,6 +114,8 @@ def get_words_data(emotion_df: pd.DataFrame):
 
 def get_bags_data(bigrams_list):
     exit()
+
+
 
 def get_all_emotions_bags(df):
     
@@ -246,9 +180,9 @@ def get_bigrams(df: pd.DataFrame):
     counter = cut_bag(counter, MINIMUM_BIGRAM_REPETITION)
     return counter
 
-        
+
 def get_all_bigrams(df: pd.DataFrame):
-    
+
     relaxed_df = df[df['Emotion'] == 'relaxed']
     RELAXED_SONGS_COUNT = len(relaxed_df.index)
     counter = get_bigrams(relaxed_df)
@@ -280,20 +214,23 @@ def get_all_bigrams(df: pd.DataFrame):
     print(counter)
 
 
-
-
 def main():
     global FINAL_NUMBER_OF_SONGS
+    global INITIAL_NUMBER_OF_SONGS
+    
+    if(INITIAL_NUMBER_OF_SONGS <= 0):
+        INITIAL_NUMBER_OF_SONGS = 1000000
     # ----------------------------------
     # ------------ word bags -----------
     # ----------------------------------
     
-    df = get_df_from_lyrics_csv()
-    df_with_lyrics, empty_lyrics = insert_lyrics_to_df(df, "bags")
+    df = read_csv_as_df(LYRICS_DATASET_PATH)
+    lyrics_df,  lyrics_list, empty_lyrics = get_lyrics_df(UNIGRAMS_MODE)
+    df_with_lyrics = insert_column_to_df(df, "Lyric", lyrics_list, 3)
     FINAL_NUMBER_OF_SONGS = INITIAL_NUMBER_OF_SONGS - len(empty_lyrics)
     
     print('empty_lyrics: ', empty_lyrics)
-    #print(df[415:418])
+    print(df_with_lyrics)
     print("TOTAL SONGS: ", len(df_with_lyrics.index))
 
     get_all_emotions_bags(df_with_lyrics)
@@ -309,8 +246,8 @@ def main():
     # ------------- bigrams ------------
     # ----------------------------------
     
-    df = get_df_from_lyrics_csv()
-    df_with_lyrics, empty_lyrics = insert_lyrics_to_df(df, "bigrams")
+    df = read_csv_as_df(LYRICS_DATASET_PATH)
+    df_with_lyrics, empty_lyrics = insert_lyrics_to_df(df, BIGRAMS_MODE)
     FINAL_NUMBER_OF_SONGS = INITIAL_NUMBER_OF_SONGS - len(empty_lyrics)
     
     get_all_bigrams(df)
