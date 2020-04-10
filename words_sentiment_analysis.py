@@ -130,8 +130,8 @@ def get_all_emotions_bags(df):
     print('\n\n--------RELAXED--------')
     print("RELAXED SONGS: ", RELAXED_SONGS_COUNT)
     print(relaxed_data_df.head(25))
-    
     relaxed_data_df.to_csv(DATAFRAME_PATH + "relaxed_data.csv")
+
 
     angry_df = df[df['Emotion'] == 'angry']
     ANGRY_SONGS_COUNT = len(angry_df.index)
@@ -160,6 +160,14 @@ def get_all_emotions_bags(df):
     print(sad_data_df.head(25))
     
     sad_data_df.to_csv(DATAFRAME_PATH + "sad_data.csv")
+    
+    
+        
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(relaxed_data_df)
+        print(angry_data_df)
+        print(happy_data_df)
+        print(sad_data_df)
 
 #TODO
 # - Tener en cuenta salto de linea, no deberia ponerse como bigrama la ultima palabra de un verso y la primera del siguiente.
@@ -227,6 +235,7 @@ def main():
     df = read_csv_as_df(LYRICS_DATASET_PATH)
     lyrics_df,  lyrics_list, empty_lyrics = get_lyrics_df(UNIGRAMS_MODE)
     df_with_lyrics = insert_column_to_df(df, "Lyric", lyrics_list, 3)
+
     FINAL_NUMBER_OF_SONGS = INITIAL_NUMBER_OF_SONGS - len(empty_lyrics)
     
     print('empty_lyrics: ', empty_lyrics)
@@ -234,6 +243,8 @@ def main():
     print("TOTAL SONGS: ", len(df_with_lyrics.index))
 
     get_all_emotions_bags(df_with_lyrics)
+    
+    
     exit()
     # ----------------------------------
     # ----------------------------------

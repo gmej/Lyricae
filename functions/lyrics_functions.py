@@ -20,7 +20,10 @@ def open_lyric_from_index(index: str) -> str:
 
 
 def get_words_list(lyric: str) -> list:
-    return word_tokenize(lyric)
+    remove_list = ["'s", "n't", "'m", "'re", "'ll", "'ve", "'d", "'ll"]
+    word_list = word_tokenize(lyric)
+    return [x for x in word_list if x not in remove_list]
+
 
 
 def remove_stopwords(words: list) -> list:
@@ -30,6 +33,8 @@ def remove_stopwords(words: list) -> list:
 
 def remove_punctuation(words: list) -> list:
     punctuation = set(string.punctuation)
+    custom_punctuation = set(["...", "''", "'", "`", "``"])
+    punctuation = punctuation.union(custom_punctuation)
     return [w for w in words if  w not in punctuation]
 
 
@@ -38,6 +43,15 @@ def preprocess(lyric: str, mode: str) -> list:
     lyric = lyric.replace("\r", '\n')
     lyric = lyric.replace("\r\n", '\n')
     lyric = lyric.replace("\r\n", '\n')
+    
+    
+    lyric = lyric.replace("can't", 'can not')
+    lyric = lyric.replace("won't", 'will not')
+    lyric = lyric.replace("'d", ' would')
+    lyric = lyric.replace("gonna", 'going to')
+    lyric = lyric.replace("'cause", 'because')
+    lyric = lyric.replace("'bout", 'about')
+    
     words = get_words_list(lyric)
     if(mode == UNIGRAMS_MODE):
         words = remove_stopwords(words) # i, you, me...
