@@ -18,7 +18,7 @@ DATAFRAME_PATH = "./dataframes/"
 LYRICS_DATASET_PATH = './datasets/MoodyLyrics.csv'
 
 def read_csv_as_df(path: str) -> pd.DataFrame:    
-    csv_df = pd.read_csv(path, na_values=['.'])
+    csv_df = pd.read_csv(path, na_values=['.'], dtype={'Index': str, 'Artist': str, 'Song': str, 'Emotion': str})
     return csv_df.head(INITIAL_NUMBER_OF_SONGS)
 
 
@@ -27,7 +27,7 @@ def insert_column_to_df(df: pd.DataFrame, name: str, values: list, pos: int) -> 
     return df
 
 
-def get_lyrics_df(mode: str) -> pd.DataFrame:
+def get_lyrics_df(mode: int = 1) -> pd.DataFrame:
     global INITIAL_NUMBER_OF_SONGS
     
     NUMBER_OF_SONGS_IN_FOLDER = len(os.listdir('./lyrics_lyricwikia/'))
@@ -143,23 +143,20 @@ def get_words_complete_data(emotion_df: pd.DataFrame) -> pd.DataFrame:
     return emotion_words_df
 
 
-def get_bags_data(bigrams_list):
-    exit()
 
-
-def get_all_emotions_bags(df):
+def get_all_emotions_bags(df: pd.DataFrame):
     
     
     if(not os.path.exists(DATAFRAME_PATH)):
         os.makedirs(DATAFRAME_PATH)
     
+
     relaxed_df = df[df['Emotion'] == 'relaxed']
     RELAXED_SONGS_COUNT = len(relaxed_df.index)
     relaxed_unigram_data = get_words_complete_data(relaxed_df)
     print('\n\n--------RELAXED--------')
     print("RELAXED SONGS: ", RELAXED_SONGS_COUNT)
     print(relaxed_unigram_data.head(25))
-    
     relaxed_unigram_data.to_csv(DATAFRAME_PATH + "relaxed_unigram_data.csv")
 
 
@@ -205,7 +202,7 @@ def get_bigrams_complete_data(emotion_df: pd.DataFrame):
     
     emotion_bigram_bag, bigram_set = create_bigram_bag(list_of_lyrics) 
     emotion_bigram_bag = cut_bigram_bag(emotion_bigram_bag, bigram_set, MINIMUM_BIGRAM_REPETITION)
-    
+
     bigram_file_ocurrences = get_bigram_file_ocurrences(list_of_lyrics, emotion_bigram_bag, bigram_set)
     bigrams_repetitions = get_gram_repetitions(emotion_bigram_bag)
     weights = calculate_weights(bigram_file_ocurrences, bigrams_repetitions)
@@ -215,9 +212,9 @@ def get_bigrams_complete_data(emotion_df: pd.DataFrame):
     #print(sorted_ocurrences) 
     
     sorted_data = []
-    for key in sorted(bigrams_repetitions.keys()):
-        sorted_data.append([key, bigrams_repetitions[key], bigram_file_ocurrences[key], weights[key]])
-    emotion_bigrams_df = pd.DataFrame(sorted_data, columns=["word", "totalRepetitions", "fileOcurrences", "weight"])
+    for bigram in sorted(bigrams_repetitions.keys()):
+        sorted_data.append([bigram, bigram[0], bigram[1], bigrams_repetitions[bigram], bigram_file_ocurrences[bigram], weights[bigram]])
+    emotion_bigrams_df = pd.DataFrame(sorted_data, columns=["bigram", "word1", "word2", "totalRepetitions", "fileOcurrences", "weight"])
     emotion_bigrams_df = emotion_bigrams_df.sort_values(by='weight', ascending=False)
 
     return emotion_bigrams_df
@@ -278,7 +275,8 @@ def main():
     
     
     df = read_csv_as_df(LYRICS_DATASET_PATH)
-    lyrics_df,  lyrics_list, empty_lyrics = get_lyrics_df(UNIGRAMS_MODE)
+
+    lyrics_df,  lyrics_list, empty_lyrics = get_lyrics_df()
     df_with_lyrics = insert_column_to_df(df, "Lyric", lyrics_list, 3)
 
     FINAL_NUMBER_OF_SONGS = INITIAL_NUMBER_OF_SONGS - len(empty_lyrics)
@@ -293,7 +291,7 @@ def main():
     # ----------------------------------
     
 
-    get_all_emotions_bags(df_with_lyrics)
+    #get_all_emotions_bags(df_with_lyrics)
     
     
     # ----------------------------------
@@ -306,8 +304,13 @@ def main():
     # ------------- bigrams ------------
     # ----------------------------------
     
-    
-    get_all_emotion_bigrams(df)
+    df = read_csv_as_df(LYRICS_DATASET_PATH)
+    lyrics_df,  lyrics_list, empty_lyrics = get_lyrics_df(mode=2)
+    df_with_lyrics = insert_column_to_df(df, "Lyric", lyrics_list, pos=3)
+    print(df_with_lyrics)
+
+
+    get_all_emotion_bigrams(df_with_lyrics)
 
     # ----------------------------------
     # ----------------------------------

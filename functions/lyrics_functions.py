@@ -19,10 +19,13 @@ def open_lyric_from_index(index: str) -> str:
         return None
 
 
-def get_words_list(lyric: str) -> list:
-    remove_list = ["'s", "n't", "'m", "'re", "'ll", "'ve", "'d", "'ll"]
+def get_words_list(lyric: str, mode: int = 1) -> list:
     word_list = word_tokenize(lyric)
-    return [x for x in word_list if x not in remove_list]
+    if(mode == 1):
+        remove_list = ["'s", "n't", "'m", "'re", "'ll", "'ve", "'d", "'ll"]
+        return [x for x in word_list if x not in remove_list]
+    else:
+        return word_list
 
 
 
@@ -38,25 +41,30 @@ def remove_punctuation(words: list) -> list:
     return [w for w in words if  w not in punctuation]
 
 
-def preprocess(lyric: str, mode: str) -> list:
+def preprocess(lyric: str, mode: int = 1) -> list:
     lyric = lyric.lower()
     lyric = lyric.replace("\r", '\n')
     lyric = lyric.replace("\r\n", '\n')
     lyric = lyric.replace("\r\n", '\n')
     
-    
     lyric = lyric.replace("can't", 'can not')
     lyric = lyric.replace("won't", 'will not')
-    lyric = lyric.replace("'d", ' would')
     lyric = lyric.replace("gonna", 'going to')
     lyric = lyric.replace("wanna", 'want to')
     lyric = lyric.replace("gotta", 'got to')
     lyric = lyric.replace("'cause", 'because')
     lyric = lyric.replace("'bout", 'about')
     
-    words = get_words_list(lyric)
-    if(mode == UNIGRAMS_MODE):
+    lyric = lyric.replace("'ll", ' will')
+    lyric = lyric.replace("'ve", ' have')
+    lyric = lyric.replace("n't", ' not')
+    lyric = lyric.replace("'m", ' am')
+    lyric = lyric.replace("'re", ' are')
+    
+    words = get_words_list(lyric, mode)
+    if(mode == 1):
         words = remove_stopwords(words) # i, you, me...
-    clean_words = remove_punctuation(words)
-    return clean_words
+
+    words = remove_punctuation(words)
+    return words
 
