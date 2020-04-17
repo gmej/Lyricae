@@ -49,6 +49,8 @@ def preprocess(lyric: str, mode: str) -> list:
     lyric = lyric.replace("won't", 'will not')
     lyric = lyric.replace("'d", ' would')
     lyric = lyric.replace("gonna", 'going to')
+    lyric = lyric.replace("wanna", 'want to')
+    lyric = lyric.replace("gotta", 'got to')
     lyric = lyric.replace("'cause", 'because')
     lyric = lyric.replace("'bout", 'about')
     
