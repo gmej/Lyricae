@@ -4,9 +4,9 @@ from nltk.corpus import stopwords
 import string
 import pandas as pd
 
-from sentiments import SENTIMENTS
+#from sentiments import SENTIMENTS
 
-DATAFRAME_PATH = "./dataframes/"
+DATAFRAME_PATH = "../../dataframes/"
 
 
 
@@ -60,13 +60,18 @@ def process_input(user_input: str) -> list:
     return unigrams_list, bigrams_list
 
 
-def load_data(sentiment: str) -> pd.DataFrame:
+def load_unigrams_data(sentiment: str) -> pd.DataFrame:
     unigram_df = pd.read_csv(DATAFRAME_PATH + sentiment + "_unigram_data.csv",
-                              dtype={'word': str, 'totalRepetitions': int, 'fileOcurrences': int, 'weight': float})
+        dtype={'word': str, 'totalRepetitions': int, 'fileOcurrences': int, 'weight': float})
+    return unigram_df
+
+def load_bigrams_data(sentiment: str) -> pd.DataFrame:
     bigram_df = pd.read_csv(DATAFRAME_PATH + sentiment + "_bigram_data.csv")
+    return bigram_df
+
+def load_similarities(sentiment: str) -> pd.DataFrame:
     similarities_df = pd.read_csv(DATAFRAME_PATH + sentiment + "_similarities.csv", index_col= 'word')
-    
-    return unigram_df, bigram_df, similarities_df
+    return similarities_df
 
 
 def create_dict_recursively(dictionary: dict, depth: int = 3, bigram_df: pd.DataFrame = None):
@@ -92,6 +97,7 @@ def recommend_most_common_words(unigram_df: pd.DataFrame, number: int) -> list:
 
 #RECOMMENDATION
 #TODO ¿tener en cuenta el peso?
+#TODO Recomienda la propia palabra
 def recommend_keyed_vectors(unigrams: list, similarities: pd.DataFrame, number: int = 5):
     recommendations = {}
     for word in unigrams:
@@ -99,6 +105,8 @@ def recommend_keyed_vectors(unigrams: list, similarities: pd.DataFrame, number: 
             column_series = similarities[word]
             most_similar = column_series.sort_values(ascending=False).nlargest(number)
             most_similar_words = most_similar.index.values.tolist()
+            if(most_similar_words[0] == word):
+                most_similar_words.pop(0)
             recommendations[word] = most_similar_words
     return recommendations
 
@@ -132,15 +140,12 @@ def next_words_list(word, bigram_df):
 def recommend_bigrams(bigrams_input: list, bigram_df: pd.DataFrame):
     NUMBER_OF_ITERATIONS = 3
 
-    print("\n\n\n")
-    print('END OF INPUT: ', bigrams_input[len(bigrams_input)-1][0], bigrams_input[len(bigrams_input)-1][1])
-    print("\n")
-
     #RECOMMENDATION BASED ON LAST WORD
     last_word = bigrams_input[len(bigrams_input)-1][1]
     next_words = next_words_dict(last_word, bigram_df)
     final_dict = create_dict_recursively(next_words, 4, bigram_df)
-    pretty_dict(final_dict)
+    #pretty_dict(final_dict)
+    return final_dict
 
 
 def pretty_dict(d, indent=0):
@@ -156,33 +161,38 @@ def pretty_dict(d, indent=0):
 def recommend_next_bigram(word: str) -> tuple:
     return
 
-def get_recommendations(selected_sentiment: int, user_input: str):
-    sentiment = SENTIMENTS[selected_sentiment]
-    unigrams_input, bigrams_input = process_input(user_input)
-    #print('\n\n user_input: ', user_input)
-    #print('\n\n input_unigrams: ', unigrams_input)
-    #print('\n\n input_bigrams: ', bigrams_input)
+def sentiment_selection(sentiment: str) -> dict:
     
-    unigram_df, bigram_df, similarities_df = load_data(sentiment)
-
-    #print('\n\n |||||| RECOMMENDATIONS FOR USER INPUT ||||||\n\n ')
-    
+    unigram_df = load_unigrams_data(sentiment)
+    bigram_df = load_bigrams_data(sentiment)
     
     most_common_words = recommend_most_common_words(unigram_df, 10)
-    #print('\n\n most_common_words: \n', most_common_words)
-    most_similar_words = recommend_keyed_vectors(unigrams_input, similarities_df, 6)
-    #print('\n\n most_similar_words: \n', most_similar_words)
-    
     most_common_bigrams = recommend_most_common_ngrams(bigram_df, 8)
-    #print('\n\n most_common_bigrams: \n', most_common_bigrams)
     
-    next_bigrams = recommend_bigrams(bigrams_input, bigram_df)
-    return ('aaaaaa')
-    return [most_common_words, most_similar_words, most_common_bigrams, next_bigrams]
+    return {
+        'most_common_words': most_common_words,
+        'most_common_bigrams': most_common_bigrams
+    }
+
+def get_recommendations(sentiment: str, user_input: str):
+    n_words = user_input.split()
+    
+    unigrams_input, bigrams_input = process_input(user_input)
+    
+    unigram_df = load_unigrams_data(sentiment)
+    bigram_df = load_bigrams_data(sentiment)
+    similarities_df = load_similarities(sentiment)
+
+    most_similar_words = recommend_keyed_vectors(unigrams_input, similarities_df, 6)
+
+    if(len(n_words) < 2):
+        return {
+        'most_similar_words': most_similar_words,
+        }
+    else:
+        next_bigrams = recommend_bigrams(bigrams_input, bigram_df)
+        return {
+            'most_similar_words': most_similar_words,
+            'next_bigrams': next_bigrams}
     
 
-
-
-
-if __name__ == "__main__":
-    main()
