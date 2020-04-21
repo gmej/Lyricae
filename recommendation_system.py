@@ -3,22 +3,18 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
 import pandas as pd
-import numpy as np
-import types
+
+from sentiments import SENTIMENTS
 
 DATAFRAME_PATH = "./dataframes/"
 
-SENTIMENTS = {
-    1: "happy",
-    2: "angry",
-    3: "relaxed",
-    4: "sad",
-}
+
+
 
 #MOCK
-selected_sentiment = 3
+#selected_sentiment = 3
 #user_input = 'I feel'
-user_input = 'I feel like my soul is'
+#user_input = 'I feel like my soul is'
 
 
 
@@ -160,26 +156,29 @@ def pretty_dict(d, indent=0):
 def recommend_next_bigram(word: str) -> tuple:
     return
 
-def main():
+def get_recommendations(selected_sentiment: int, user_input: str):
     sentiment = SENTIMENTS[selected_sentiment]
     unigrams_input, bigrams_input = process_input(user_input)
-    print('\n\n user_input: ', user_input)
-    print('\n\n input_unigrams: ', unigrams_input)
-    print('\n\n input_bigrams: ', bigrams_input)
+    #print('\n\n user_input: ', user_input)
+    #print('\n\n input_unigrams: ', unigrams_input)
+    #print('\n\n input_bigrams: ', bigrams_input)
     
     unigram_df, bigram_df, similarities_df = load_data(sentiment)
 
-    print('\n\n |||||| RECOMMENDATIONS FOR USER INPUT ||||||\n\n ')
+    #print('\n\n |||||| RECOMMENDATIONS FOR USER INPUT ||||||\n\n ')
+    
     
     most_common_words = recommend_most_common_words(unigram_df, 10)
-    print('\n\n most_common_words: \n', most_common_words)
+    #print('\n\n most_common_words: \n', most_common_words)
     most_similar_words = recommend_keyed_vectors(unigrams_input, similarities_df, 6)
-    print('\n\n most_similar_words: \n', most_similar_words)
+    #print('\n\n most_similar_words: \n', most_similar_words)
     
     most_common_bigrams = recommend_most_common_ngrams(bigram_df, 8)
-    print('\n\n most_common_bigrams: \n', most_common_bigrams)
+    #print('\n\n most_common_bigrams: \n', most_common_bigrams)
     
-    recommend_bigrams(bigrams_input, bigram_df)
+    next_bigrams = recommend_bigrams(bigrams_input, bigram_df)
+    return ('aaaaaa')
+    return [most_common_words, most_similar_words, most_common_bigrams, next_bigrams]
     
 
 
