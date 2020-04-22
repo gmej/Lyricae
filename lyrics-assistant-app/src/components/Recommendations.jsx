@@ -1,72 +1,52 @@
 import React from 'react'
-
+import SentimentRecommendations from './SentimentRecommendations'
+import UserInputRecommendations from './UserInputRecommendations'
 import '../assets/styles/Recommendations.css'
 
 export default class Recommendations extends React.Component {
     constructor(props){
         super(props)
 
-        this.createTable = this.createTable.bind(this)
+        this.selectNSimilarWords = this.selectNSimilarWords.bind(this)
+        this.selectNBigramsRecommendations = this.selectNBigramsRecommendations.bind(this)
+        this.selectNWords = this.selectNWords.bind(this)
+        this.selectNBigrams = this.selectNBigrams.bind(this)
     }
 
-    createTable(content){
-        let table = []
-    
-        content.forEach(word => {
-            table.push(<td key = {word}>{word}</td>)
-        });
-        return table
+    selectNWords(n) {
+        this.props.selectNWords(n)
     }
 
-    createMostSimilarWordsTable(content){
-        let tables = []
-        let table = []
-        // Outer loop to create parent
-        let words = []
-        for(let word in content){
-            words.push(word)
-        }
-        /* tables.push(<th>{words}</th>) */
-        for(let word in content){
-            let children = []
-            for(let recom in content[word]){
-                children.push(<tr>{content[word][recom]}</tr>)
-                
-            }
-            table.push(<td>{children}</td>)
-        }
-        return table
-      }
+    selectNBigrams(n) {
+        this.props.selectNBigrams(n)
+    }
+
+    selectNSimilarWords(n) {
+        this.props.selectNSimilarWords(n)
+    }
+
+    selectNBigramsRecommendations(n) {
+        this.props.selectNBigramsRecommendations(n)
+    }
+
 
     render() {
-        console.log('AAAAAAAAAAa')
-        console.log(this.props.mostSimilarWords)
         return(
             
             <div>
+                <SentimentRecommendations 
+                    mostCommonWords={this.props.mostCommonWords}
+                    mostCommonBigrams={this.props.mostCommonBigrams}
+                    selectNBigrams={this.selectNBigrams}
+                    selectNWords={this.selectNWords}
+                />
 
-                Most Common Words: 
-                <table>
-                    <p>{this.props.mostCommonWords != null ? 
-                    this.createTable(this.props.mostCommonWords) :
-                     null}</p>
-                </table>
-
-                
-                Most Common Bigrams:
-                <table>
-                     <p>{this.props.mostCommonBigrams != null ? 
-                    this.createTable(this.props.mostCommonBigrams) :
-                     null}</p>
-                </table>
-
-                Most Similar Words: 
-                <table>
-                    {this.props.mostSimilarWords != null ? 
-                    this.createMostSimilarWordsTable(this.props.mostSimilarWords) :
-                     null}
-                </table>
-                {/* <p>{this.props.nextBigrams}</p> */}
+                <UserInputRecommendations 
+                    mostSimilarWords={this.props.mostSimilarWords}
+                    nextNBigrams={this.props.nextNBigrams}
+                    selectNSimilarWords={this.selectNSimilarWords}
+                    selectNBigramsRecommendations={this.selectNBigramsRecommendations}
+                />
             </div>
         )
     }

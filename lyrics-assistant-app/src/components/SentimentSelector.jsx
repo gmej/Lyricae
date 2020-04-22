@@ -10,7 +10,7 @@ export default class SentimentSelector extends React.Component {
       }
 
       componentDidMount(){
-          this.props.selectSentiment(this.state.value)
+        this.props.selectSentiment(this.state.value)
       }
     
       handleChange(event) {
@@ -31,7 +31,6 @@ export default class SentimentSelector extends React.Component {
                 <option value={sentiments.sad}>{sentiments.sad}</option>
               </select>
             </label>
-            <input type="submit" value="Submit" />
           </form>
         );
       }

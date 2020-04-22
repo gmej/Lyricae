@@ -1,0 +1,10 @@
+SHELL
+
+cd lyrics-assistant-app
+export FLASK_APP=api.py
+npm run start-api
+
+SHELL
+
+cd lyrics-assistant-app
+npm start

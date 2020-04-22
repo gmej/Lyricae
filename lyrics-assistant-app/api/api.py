@@ -9,12 +9,14 @@ def recommend_from_text():
     req = request.get_json()
     sentiment = req['sentiment']
     user_input = req['user_input']
-    print(sentiment)
-    print(user_input)
-    return get_recommendations(sentiment, user_input)
+    n_similar_words = int(req['n_similar_words'])
+    n_next_bigrams = int(req['n_next_bigrams'])
+    return get_recommendations(sentiment, user_input, n_similar_words, n_next_bigrams)
 
 @app.route('/select_sentiment', methods=['POST'])
 def select_sentiment():
     req = request.get_json()
     sentiment = req['sentiment']
-    return sentiment_selection(sentiment)
+    n_words = int(req['n_words'])
+    n_bigrams = int(req['n_bigrams'])
+    return sentiment_selection(sentiment, n_words, n_bigrams)
