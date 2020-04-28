@@ -19,12 +19,13 @@ export default class Verse extends React.Component {
     
     render() {
         return(
-            <div>
+            <div id={this.props.id}>
                 <input 
+                    autofocus={this.props.selected ? "autofocus" : null}
                     className={this.props.selected ? "selected" : "unselected"}
                     type="text"
-                    id="fname"
-                    name="fname"
+                    id={this.props.key}
+                    name={this.props.key}
                     value={this.props.text}
                     onChange={this.handleChange}
                     onClick={this.select}

@@ -26,7 +26,7 @@ export default class Selector extends React.Component {
     getValues(){
         let lista= []
         for(let i=this.state.min; i<=this.state.max; i++){
-            lista.push(<option>{i}</option>)
+            lista.push(<option key={"option_"+i}>{i}</option>)
         }
         return lista
     }

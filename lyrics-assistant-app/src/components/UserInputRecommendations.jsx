@@ -21,10 +21,9 @@ export default class UserInputRecommendations extends React.Component {
     }
 
     createList(content){
-        console.log(content)
         let table = []
         content.map((recom, i) => {
-            table.push(<tr>{recom}</tr>)
+            table.push(<tr key={"recom_" + recom}>{recom}</tr>)
         })
         return table
     }
@@ -36,8 +35,8 @@ export default class UserInputRecommendations extends React.Component {
         }
         return words.map((word, i) =>{
             return(
-                <div>
-                    {word}: {content[word]}
+                <div key={"word_"+word}>
+                    {word}: {content[word] + " , "}
                 </div>
             )
         })

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import WritingSpace from './WritingSpace'
 import Header from './Header'
 import SentimentSelector from './SentimentSelector'
 import Recommendations from './Recommendations'
+
+//import '../assets/styles/App.css'
 
 
 export default class App extends React.Component {
@@ -10,17 +12,16 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            timeoutTime: 0.5*1000,
             writing: false,
             timeout: null,
             selectedVerse: 0,
+            sentiment: "happy",
             verses: [""],
             mostCommonWords: null,
             mostCommonBigrams: null,
             mostSimilarWords: null,
             nextNBigrams: null,
-            sentiment: "happy",
-            nBigrams: 7,
-            nWords: 7,
             nSimilarWords: 7,
             nNextBigrams: 3,
         }
@@ -28,67 +29,61 @@ export default class App extends React.Component {
         this.newVerse = this.newVerse.bind(this)
         this.selectSentiment = this.selectSentiment.bind(this)
         this.selectVerse = this.selectVerse.bind(this)
-        this.call_api_sentiment = this.call_api_select_sentiment.bind(this)
-        this.selectNBigrams = this.selectNBigrams.bind(this)
-        this.selectNWords = this.selectNWords.bind(this)
+        this.call_api_sentiment = this.callApiSelectSentiment.bind(this)
         this.selectNSimilarWords = this.selectNSimilarWords.bind(this)
         this.selectNBigramsRecommendations = this.selectNBigramsRecommendations.bind(this)
     }
 
-    componentDidMount(){
-    }
-
     componentDidUpdate(){
         console.log('-------------------------------------')
+        console.log("mostCommonWords: ", this.state.mostCommonWords)
+        console.log("mostCommonBigrams: ", this.state.mostCommonBigrams)
+        console.log("mostSimilarWords: ", this.state.mostSimilarWords)
+        console.log("nextNBigrams: ", this.state.nextNBigrams)
         console.log('-------------------------------------')
-        console.log("nBigrams: ", this.state.nBigrams)
-        console.log("nWords: ", this.state.nWords)
+        console.log("sentiment: ", this.state.sentiment)
         console.log("nSimilarWords: ", this.state.nSimilarWords)
         console.log("nNextBigrams: ", this.state.nNextBigrams)
-        console.log("mostSimilarWords: ", this.state.mostSimilarWords)
         console.log("nextBigrams: ", this.state.nextBigrams)
     }
-    
-    componentWillUpdate(){
 
-        
+    async callApi() {
+        clearTimeout(this.timeout)
+
+        this.timeout = setTimeout(async () => {
+            this.callApiSelectSentiment(this.state.sentiment)
+            this.callApiRecommendFromText(this.state.verses[this.state.selectedVerse], this.state.nSimilarWords, this.state.nextNBigrams)
+        },this.state.timeoutTime)
+
 
     }
 
-    async call_api_select_sentiment(sentiment, nWords, nBigrams) {
+    async callApiSelectSentiment(sentiment) {
         if(sentiment == undefined) {
             sentiment=this.state.sentiment
         }
-        if(nWords == undefined) {
-            nWords=this.state.nWords
-        }
-        if(nBigrams == undefined) {
-            nBigrams=this.state.nBigrams
-        }
 
-        const response = await fetch("/select_sentiment", {
-            method: "POST",
-            headers: {
-              "Content_Type": "application/json"
-            },
-            body:
-              JSON.stringify({
-                  sentiment: sentiment,
-                  n_words: nWords,
-                  n_bigrams: nBigrams,
-              })
-            })
-        if(response.ok) {
-            response.json().then(data => {
-                this.setState({
-                    mostCommonWords: data.most_common_words,
-                    mostCommonBigrams: data.most_common_bigrams
+            const response = await fetch("/select_sentiment", {
+                method: "POST",
+                headers: {
+                "Content_Type": "application/json"
+                },
+                body:
+                JSON.stringify({
+                    sentiment: sentiment,
                 })
             })
-        }
+            if(response.ok) {
+                response.json().then(data => {
+                    this.setState({
+                        mostCommonWords: data.most_common_words,
+                        mostCommonBigrams: data.most_common_bigrams
+                    })
+                })
+            }
     }
 
-    async call_api_recommend_from_text(text, nSimilarWords, nNextBigrams){
+    async callApiRecommendFromText(text, nSimilarWords, nNextBigrams){
         if(text == undefined) {
             text=this.state.text
         }
@@ -98,119 +93,110 @@ export default class App extends React.Component {
         if(nNextBigrams == undefined) {
             nNextBigrams=this.state.nNextBigrams
         }
-        const response = await fetch("/recommend_from_text", {
-            method: "POST",
-            headers: {
-              "Content_Type": "application/json"
-            },
-            body:
-              JSON.stringify({
-                sentiment: this.state.sentiment,
-                user_input: this.state.verses[this.state.selectedVerse],
-                n_similar_words: this.state.nSimilarWords,
-                n_next_bigrams: this.state.nNextBigrams,
-              })
-            })
-        if(response.ok) {
-            response.json().then(data => {
-                console.log(data)
-                this.setState({
-                    mostSimilarWords: data.most_similar_words,
-                    nextNBigrams: data.next_bigrams
-                })
-            })
-        }
 
+            const response = await fetch("/recommend_from_text", {
+                method: "POST",
+                headers: {
+                "Content_Type": "application/json"
+                },
+                body:
+                JSON.stringify({
+                    sentiment: this.state.sentiment,
+                    user_input: this.state.verses[this.state.selectedVerse],
+                    n_similar_words: this.state.nSimilarWords,
+                    n_next_bigrams: this.state.nNextBigrams,
+                })
+                })
+            if(response.ok) {
+                response.json().then(data => {
+                    this.setState({
+                        mostSimilarWords: data.most_similar_words,
+                        nextNBigrams: data.next_bigrams
+                    })
+                })
+            }
     }
 
     write(text) {
-        clearTimeout(this.timeout)
-
         let copyVerses = this.state.verses
         copyVerses[this.state.selectedVerse] = text
         this.setState({
             verses: copyVerses
         })
-
-        this.timeout = setTimeout(async () => {
-            this.call_api_recommend_from_text(text)
-        },2000)
+        this.callApi()
     }
 
     selectSentiment(sentiment){
         this.setState({
             sentiment: sentiment
         })
-        this.call_api_select_sentiment(sentiment, undefined, undefined).then()
+        this.callApi()
     }
 
     selectVerse(number) {
         this.setState({
             selectedVerse: number
         })
-
+        this.callApi()
     }
 
-    selectNWords(n){
-        this.setState({
-            nWords:n
-        })
-        this.call_api_select_sentiment(undefined, n, undefined).then()
-    }
-    
-    selectNBigrams(n){
-        this.setState({
-            nBigrams:n
-        })
-        this.call_api_select_sentiment(undefined, undefined, n).then()
-    }
 
     selectNSimilarWords(n) {
         this.setState({
             nSimilarWords:n
         })
-        this.call_api_recommend_from_text(undefined, n, undefined)
+        this.callApi()
     }
 
     selectNBigramsRecommendations(n) {
         this.setState({
             nNextBigrams:n
         })
-        this.call_api_recommend_from_text(undefined, undefined, n)
+        this.callApi()
     }
 
     newVerse(){
         let copyVerses = this.state.verses
         copyVerses.push("")
+        let selected = copyVerses.length-1
         this.setState({
-            verses: copyVerses
+            verses: copyVerses,
+            selectedVerse: copyVerses.length-1
         })
+        this.callApi()
     }
 
     //TODO renders twice
     render() {
-        let text = "Welcome to the lyrics assistant app!"
+        let lines = ["Welcome to the lyrics assistant app!", 
+            " Select the sentiment you are feeling in the lyrics you want to write and start witing the first verse.", 
+            "You can see the recommendations on the right side of this app based on the selected sentiment",
+            "You will see more recommendations based on your verse once you start writing!",
+            "Good luck and nice lyric creation"]
         return(
-            <div>
-                <Header text = {text} />
-                <SentimentSelector selectSentiment={this.selectSentiment} />
-                <WritingSpace
-                    verses={this.state.verses} 
-                    selected={this.state.selectedVerse}
-                    write={this.write}
-                    selectVerse = {this.selectVerse}
-                    newVerse={this.newVerse}
-                />
-                <Recommendations 
-                    mostCommonWords={this.state.mostCommonWords}
-                    mostCommonBigrams={this.state.mostCommonBigrams}
-                    mostSimilarWords={this.state.mostSimilarWords}
-                    nextNBigrams={this.state.nextNBigrams}
-                    selectNBigrams={this.selectNBigrams}
-                    selectNWords={this.selectNWords}
-                    selectNSimilarWords={this.selectNSimilarWords}
-                    selectNBigramsRecommendations={this.selectNBigramsRecommendations}
-                />
+            <div className="myApp">
+                <div className="input">
+                    <Header className="header" lines = {lines} />
+                    <SentimentSelector className="sentimentSelector" selectSentiment={this.selectSentiment} />
+                    <WritingSpace className="writingSpace"
+                        verses={this.state.verses} 
+                        selected={this.state.selectedVerse}
+                        write={this.write}
+                        selectVerse = {this.selectVerse}
+                        newVerse={this.newVerse}
+                    />
+                </div>
+                <div className="recommendations">
+                    <Recommendations  className="recommendations"
+                        sentiment={this.state.sentiment}
+                        mostCommonWords={this.state.mostCommonWords}
+                        mostCommonBigrams={this.state.mostCommonBigrams}
+                        mostSimilarWords={this.state.mostSimilarWords}
+                        nextNBigrams={this.state.nextNBigrams}
+                        selectNSimilarWords={this.selectNSimilarWords}
+                        selectNBigramsRecommendations={this.selectNBigramsRecommendations}
+                    />
+                </div>
             </div>
         )
     }

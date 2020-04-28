@@ -9,17 +9,8 @@ export default class Recommendations extends React.Component {
 
         this.selectNSimilarWords = this.selectNSimilarWords.bind(this)
         this.selectNBigramsRecommendations = this.selectNBigramsRecommendations.bind(this)
-        this.selectNWords = this.selectNWords.bind(this)
-        this.selectNBigrams = this.selectNBigrams.bind(this)
     }
 
-    selectNWords(n) {
-        this.props.selectNWords(n)
-    }
-
-    selectNBigrams(n) {
-        this.props.selectNBigrams(n)
-    }
 
     selectNSimilarWords(n) {
         this.props.selectNSimilarWords(n)
@@ -35,10 +26,9 @@ export default class Recommendations extends React.Component {
             
             <div>
                 <SentimentRecommendations 
+                    sentiment={this.props.sentiment}
                     mostCommonWords={this.props.mostCommonWords}
                     mostCommonBigrams={this.props.mostCommonBigrams}
-                    selectNBigrams={this.selectNBigrams}
-                    selectNWords={this.selectNWords}
                 />
 
                 <UserInputRecommendations 

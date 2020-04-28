@@ -1,5 +1,6 @@
 import React from 'react'
 import Selector from './Selector'
+import Cloud from './Cloud'
 
 export default class SentimentRecommendations extends React.Component {
 
@@ -7,40 +8,45 @@ export default class SentimentRecommendations extends React.Component {
     constructor(props){
         super(props)
 
-        this.createTable = this.createTable.bind(this)
-        this.selectNWords = this.selectNWords.bind(this)
-        this.selectNBigrams = this.selectNBigrams.bind(this)
+        this.createTableBigrams = this.createTableBigrams.bind(this)
     }
 
     createTable(content){
-        let table = []
-    
-        content.forEach(word => {
-            table.push(<td key = {word}>{word}</td>)
+        return
+        let words = []
+        let weights = content.weights
+        let words_list = content.words
+        words_list.forEach(word => {
+            words.push(<td key = {word}>{word}</td>)
         });
-        return table
+        return words
     }
 
-    selectNWords(n){
-        this.props.selectNWords(n)
-    }
-
-
-    selectNBigrams(n){
-        this.props.selectNBigrams(n)
+    createTableBigrams(content){
+        return
+        let words = []
+        content.forEach(word => {
+            words.push(<td key = {word}>{word}</td>)
+        });
+        return words
     }
 
     render() {
+        if(!this.props.mostCommonWords || !this.props.mostCommonBigrams) {
+            return(<div></div>)
+        }
+
         return(
             <div>
                 <br/>
 
                 Most Common Words: 
 
-                <Selector selectNumber={this.selectNWords} />
                 <br/>
+                {/* <Cloud type={"bigrams"} sentiment={this.props.sentiment} data={this.props.mostCommonBigrams}/> */}
+                {/* <Cloud type={"words"} sentiment={this.props.sentiment} data={this.props.mostCommonWords}/> */}
                 <table>
-                    {this.props.mostCommonWords != null ? 
+                    {this.props.mostCommonWords >0 ? 
                         this.createTable(this.props.mostCommonWords) :
                         null}
                 </table>
@@ -50,16 +56,14 @@ export default class SentimentRecommendations extends React.Component {
                 
                 Most Common Bigrams:
 
-                <Selector selectNumber={this.selectNBigrams} />
                 <br/>
                 <table>
                     {this.props.mostCommonBigrams != null ? 
-                        this.createTable(this.props.mostCommonBigrams) :
+                        this.createTableBigrams(this.props.mostCommonBigrams) :
                         null}
                 </table>
             </div>
         )
     }
-
 
 }

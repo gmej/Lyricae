@@ -3,21 +3,11 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string
 import pandas as pd
-
+import random
+import types
 #from sentiments import SENTIMENTS
 
 DATAFRAME_PATH = "../../dataframes/"
-
-
-
-
-#MOCK
-#selected_sentiment = 3
-#user_input = 'I feel'
-#user_input = 'I feel like my soul is'
-
-
-
 
 def preprocess(lyric: str) -> list:
     lyric = lyric.lower()
@@ -43,6 +33,7 @@ def preprocess(lyric: str) -> list:
     punctuation = punctuation.union(custom_punctuation)
     return [w for w in words if  w not in punctuation]
 
+
 def preprocess_unigram(words: list) -> list:
     
     #remove stopwords
@@ -65,79 +56,61 @@ def load_unigrams_data(sentiment: str) -> pd.DataFrame:
         dtype={'word': str, 'totalRepetitions': int, 'fileOcurrences': int, 'weight': float})
     return unigram_df
 
+
 def load_bigrams_data(sentiment: str) -> pd.DataFrame:
     bigram_df = pd.read_csv(DATAFRAME_PATH + sentiment + "_bigram_data.csv")
     return bigram_df
+
 
 def load_similarities(sentiment: str) -> pd.DataFrame:
     similarities_df = pd.read_csv(DATAFRAME_PATH + sentiment + "_similarities.csv", index_col= 'word')
     return similarities_df
 
 
-def create_dict_recursively(dictionary: dict, depth: int = 3, bigram_df: pd.DataFrame = None):
+def create_dict_recursively(dictionary: dict,number: int = 4, depth: int = 2, bigram_df: pd.DataFrame = None):
     depth -= 1
     if(depth == 0):
         return dictionary
     for el in dictionary:
-        new_items = next_words_list(el, bigram_df)
+        new_items = next_words_list(el, bigram_df, number)
         new_d = {}
         if(depth > 1):
             for item in new_items:
                 new_d[item] = None  # espacio para el nuevo dict
-            dictionary[el] = create_dict_recursively(new_d, depth, bigram_df)
+            dictionary[el] = create_dict_recursively(new_d, number, depth, bigram_df)
         else:
             dictionary[el] = new_items
     return dictionary
 
 
-#RECOMMENDATION
-def recommend_most_common_words(unigram_df: pd.DataFrame, number: int) -> list:
-    words = unigram_df.nlargest(number, 'weight')
-    return words['word'].tolist()
+def shuffle_dict(dictionary: dict):
+    keys = list(dictionary.keys())
+    random.shuffle(keys)
+    shuffle_dict = {}
+    for key in keys:
+        if(isinstance(dictionary[key], list)):
+            lista = dictionary[key]
+            random.shuffle(lista)
+            shuffle_dict[key] = lista
+        else:
+            shuffle_dict[key] = dictionary[key]
+    return shuffle_dict
+    
 
-#RECOMMENDATION
-def recommend_most_common_ngrams(ngram_df: pd.DataFrame, number: int) -> list:
-    ngram_df = ngram_df.head(number)
-    ngrams = ngram_df.nlargest(number, 'weight')
-    word1 = ngram_df['word1'].tolist()
-    word2 = ngram_df['word2'].tolist()
-    lista = []
-    for i in range(0, len(word1)):
-        lista.append((word1[i] + ' ' + word2[i]))
-    return lista
-
-
-#RECOMMENDATION
-#TODO ¿tener en cuenta el peso?
-#TODO Recomienda la propia palabra
-def recommend_keyed_vectors(unigrams: list, similarities: pd.DataFrame, number: int = 5):
-    recommendations = {}
-    for word in unigrams:
-        if word in similarities:
-            column_series = similarities[word]
-            most_similar = column_series.sort_values(ascending=False).nlargest(number)
-            most_similar_words = most_similar.index.values.tolist()
-            if(most_similar_words[0] == word):
-                most_similar_words.pop(0)
-            recommendations[word] = most_similar_words
-    print(recommendations)
-    return recommendations
-
-
-
-
-def next_words_dict(word, bigram_df):
+def next_words_dict(word, bigram_df, number):
     next_df = bigram_df.loc[bigram_df['word1'] == word]
-    next_words = next_df.head(3)['word2'].tolist()
+    next_words = next_df.head(number)['word2'].tolist()
     next_words_dict = {}
     for el in next_words:
         next_words_dict[el] = None
     return next_words_dict
 
-def next_words_list(word, bigram_df):
+
+def next_words_list(word, bigram_df, number):
     next_df = bigram_df.loc[bigram_df['word1'] == word]
-    next_words = next_df.head(3)['word2'].tolist()
+    next_words = next_df.head(number)['word2'].tolist()
     return next_words
+
 
 def flatten_dict(d, parent_key='', sep=' '):
     import collections
@@ -150,6 +123,7 @@ def flatten_dict(d, parent_key='', sep=' '):
             items.append((new_key, v))
     return dict(items)
 
+
 def convert_dict_to_list(d):
     strings = []
     for k in d:
@@ -158,17 +132,65 @@ def convert_dict_to_list(d):
     return strings
 
 
-def recommend_bigrams(bigrams_input: list, bigram_df: pd.DataFrame, depth:int):
+#RECOMMENDATION
+def recommend_most_common_words(unigram_df: pd.DataFrame) -> list:
+    N_UNIGRAM_RECOMMENDATIONS = 30
+    words_df = unigram_df.nlargest(N_UNIGRAM_RECOMMENDATIONS, 'weight')
+    words_list = words_df['word'].tolist()
+    weights_list = words_df['weight'].tolist()
+    norm_weight = [float(i)/sum(weights_list)*1500 if i < 100 else float(100)/sum(weights_list)*1500 for i in weights_list]
+    mostCommonUnigrams = {}
+    for i in range(0,len(words_list)-1):
+        mostCommonUnigrams[words_list[i]] = norm_weight[i]
+        
+    shuffled_dict = shuffle_dict(mostCommonUnigrams)
+    return shuffled_dict
+
+
+#RECOMMENDATION
+def recommend_most_common_ngrams(ngram_df: pd.DataFrame) -> list:
+    N_NGRAM_RECOMMENDATIONS = 30
+    ngram_df = ngram_df.nlargest(N_NGRAM_RECOMMENDATIONS, 'weight')
+    word1_list = ngram_df['word1'].tolist()
+    word2_list = ngram_df['word2'].tolist()
+    weights_list = ngram_df['weight'].tolist()
+    
+    mostCommonNGrams = {}
+    for i in range(0, len(word1_list)-1):
+        ngram = (word1_list[i] + ' ' + word2_list[i])
+        mostCommonNGrams[ngram] = weights_list[i]
+    
+    shuffled_dict = shuffle_dict(mostCommonNGrams)    
+    return shuffled_dict
+
+
+#RECOMMENDATION
+def recommend_keyed_vectors(unigrams: list, similarities: pd.DataFrame, number: int = 5):
+    if(len(unigrams) <1):
+        return
+    recommendations = {}
+    for word in unigrams:
+        if word in similarities:
+            column_series = similarities[word]
+            most_similar = column_series.sort_values(ascending=False).nlargest(number)
+            most_similar_words = most_similar.index.values.tolist()
+            if(most_similar_words[0] == word):
+                most_similar_words.pop(0)
+            recommendations[word] = most_similar_words
+    shuffled_recommendations = shuffle_dict(recommendations)
+    return shuffled_recommendations
+
+
+# RECOMMENDATION
+def recommend_bigrams(bigrams_input: list, bigram_df: pd.DataFrame, number:int):
 
     #RECOMMENDATION BASED ON LAST WORD
     last_word = bigrams_input[len(bigrams_input)-1][1]
-    next_words = next_words_dict(last_word, bigram_df)
-    final_dict = create_dict_recursively(next_words, depth, bigram_df)
+    next_words = next_words_dict(last_word, bigram_df, number)
+    final_dict = create_dict_recursively(next_words, number, 2, bigram_df)
     recommendations = []
     d = flatten_dict(final_dict)
     strings = convert_dict_to_list(d)
-    #print(result)
-    #pretty_dict(final_dict)
     return strings
 
 
@@ -181,16 +203,12 @@ def pretty_dict(d, indent=0):
             print('\t' * (indent+1) + str(value))
 
 
-#RECOMMENDATION
-def recommend_next_bigram(word: str) -> tuple:
-    return
-
-def sentiment_selection(sentiment: str, n_words: int, n_bigrams: int) -> dict:
+def sentiment_selection(sentiment: str) -> dict:
     unigram_df = load_unigrams_data(sentiment)
     bigram_df = load_bigrams_data(sentiment)
     
-    most_common_words = recommend_most_common_words(unigram_df, n_words)
-    most_common_bigrams = recommend_most_common_ngrams(bigram_df, n_bigrams)
+    most_common_words = recommend_most_common_words(unigram_df)
+    most_common_bigrams = recommend_most_common_ngrams(bigram_df)
     
     return {
         'most_common_words': most_common_words,

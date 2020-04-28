@@ -1,0 +1,10 @@
+
+.myApp {
+  display: flex;
+  flex-direction: row;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+}

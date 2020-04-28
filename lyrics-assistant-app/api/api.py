@@ -17,6 +17,4 @@ def recommend_from_text():
 def select_sentiment():
     req = request.get_json()
     sentiment = req['sentiment']
-    n_words = int(req['n_words'])
-    n_bigrams = int(req['n_bigrams'])
-    return sentiment_selection(sentiment, n_words, n_bigrams)
+    return sentiment_selection(sentiment)
