@@ -9,6 +9,7 @@ export default class Recommendations extends React.Component {
 
         this.selectNSimilarWords = this.selectNSimilarWords.bind(this)
         this.selectNBigramsRecommendations = this.selectNBigramsRecommendations.bind(this)
+        this.onCloudClick = this.onCloudClick.bind(this)
     }
 
 
@@ -20,6 +21,14 @@ export default class Recommendations extends React.Component {
         this.props.selectNBigramsRecommendations(n)
     }
 
+    onClick(word){
+        this.props.onClick(word)
+    }
+
+    onCloudClick(word){
+        this.props.onCloudClick(word)
+    }
+
 
     render() {
         return(
@@ -29,6 +38,7 @@ export default class Recommendations extends React.Component {
                     sentiment={this.props.sentiment}
                     mostCommonWords={this.props.mostCommonWords}
                     mostCommonBigrams={this.props.mostCommonBigrams}
+                    onCloudClick={this.onCloudClick}
                 />
 
                 <UserInputRecommendations 

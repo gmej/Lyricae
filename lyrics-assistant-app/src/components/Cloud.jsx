@@ -1,83 +1,47 @@
 import React from 'react'
-import TagCloud from "react-tag-cloud";
-import randomColor from "randomcolor";
-import '../assets/styles/Cloud.css'
+import { TagCloud } from 'react-tagcloud'
 
-const styles = {
-    large: {
-      fontSize: 60,
-      fontWeight: "bold"
-    },
-    small: {
-      opacity: 0.7,
-      fontSize: 16
-    }
-  };
+import "../assets/styles/Cloud.css"
+
+let divStyle = {
+    "height": "200px",
+    "width": "40%",
+    "background-color": "powderblue",
+    "float": "right",
+  }
 
 export default class Cloud extends React.Component {
 
-    constructor(props){
-        super(props)
 
-        this.getElements = this.getElements.bind(this)
-        this.onClick = this.onClick.bind(this)
-    }
 
-    componentDidMount()  {
-        /*
-      setInterval(() => {
-        this.forceUpdate();
-      }, 10*1000); */
-    }
+constructor(props){
+    super(props)
 
-    onClick(w){
-        console.log(w)
-    }
-    
-
-    getElements(data){
-        let elements = []
-        for(let word in data){
-            let weight = data[word]
-            elements.push(<div id={word} className="tag-item-wrapper"
-                /* onClick={this.onClick(w)} */
-                style={{
-                fontFamily: "serif",
-                fontSize: weight,
-                fontStyle: "italic",
-                fontWeight: "bold",
-                color: randomColor()
-                }} >
-                <div>
-                    { word }
-                </div>
-            </div>)
-        };
-        return elements
-    }
-
-    render() {
-        return (
-            <div className="app-outer">
-            <div className="app-inner">
-                <h1>Most common {this.props.type} for sentiment: {this.props.sentiment}</h1>
-                <TagCloud
-                className="tag-cloud"
-                style={{
-                    fontFamily: "sans-serif",
-                    // fontSize: () => Math.round(Math.random() * 50) + 16,
-                    fontSize: 30,
-                    color: () =>
-                    randomColor({
-                        hue: "blue"
-                    }),
-                    padding: 5
-                }}
-                >
-                {this.getElements(this.props.data)}
-                </TagCloud>
-            </div>
-            </div>
-        );
-    }
+    this.onClick = this.onClick.bind(this)
 }
+
+onClick(word){
+    this.props.onClick(word)
+}
+
+// minSize, maxSize - font size in px
+// tags - array of objects with properties value and count
+// shuffle - indicates if data should be shuffled (true by default)
+// onClick event handler has `tag` and `event` parameter
+render(){
+    return(
+        <div style={divStyle}>
+            <h1>Most common {this.props.type} for sentiment: {this.props.sentiment}</h1>
+            <TagCloud
+            minSize={12}
+            maxSize={55}
+            shuffle={true}
+            tags={this.props.data}
+            className="simple-cloud"
+            onClick={tag => this.onClick(tag.value)}
+            />
+        </div>
+        )
+        
+    } 
+    }

@@ -131,6 +131,18 @@ def convert_dict_to_list(d):
             strings.append(k + ' ' + el)
     return strings
 
+def convert_values_to_new_range(values: list, new_min: float = 10, new_max: float = 70):
+    old_min = min(values)
+    old_max = max(values)
+    old_range = (old_max - old_min)  
+    new_range = (new_max - new_min)  
+    new_list = []
+    i =0
+    for el in values:
+        new_value = (((el - old_min) * new_range) / old_range) + new_min
+        new_list.append(new_value)
+        i+=1
+    return new_list
 
 #RECOMMENDATION
 def recommend_most_common_words(unigram_df: pd.DataFrame) -> list:
@@ -138,30 +150,33 @@ def recommend_most_common_words(unigram_df: pd.DataFrame) -> list:
     words_df = unigram_df.nlargest(N_UNIGRAM_RECOMMENDATIONS, 'weight')
     words_list = words_df['word'].tolist()
     weights_list = words_df['weight'].tolist()
-    norm_weight = [float(i)/sum(weights_list)*1500 if i < 100 else float(100)/sum(weights_list)*1500 for i in weights_list]
-    mostCommonUnigrams = {}
+    converted_weights = convert_values_to_new_range(weights_list)
+    mostCommonUnigrams = []
     for i in range(0,len(words_list)-1):
-        mostCommonUnigrams[words_list[i]] = norm_weight[i]
-        
-    shuffled_dict = shuffle_dict(mostCommonUnigrams)
-    return shuffled_dict
+        mostCommonUnigrams.append({
+            "value": words_list[i],
+            "count": converted_weights[i],
+        })
+    return mostCommonUnigrams
 
 
 #RECOMMENDATION
 def recommend_most_common_ngrams(ngram_df: pd.DataFrame) -> list:
     N_NGRAM_RECOMMENDATIONS = 30
     ngram_df = ngram_df.nlargest(N_NGRAM_RECOMMENDATIONS, 'weight')
+    print(ngram_df)
     word1_list = ngram_df['word1'].tolist()
     word2_list = ngram_df['word2'].tolist()
     weights_list = ngram_df['weight'].tolist()
-    
-    mostCommonNGrams = {}
+    converted_weights = convert_values_to_new_range(weights_list)
+    mostCommonNGrams = []
     for i in range(0, len(word1_list)-1):
         ngram = (word1_list[i] + ' ' + word2_list[i])
-        mostCommonNGrams[ngram] = weights_list[i]
-    
-    shuffled_dict = shuffle_dict(mostCommonNGrams)    
-    return shuffled_dict
+        mostCommonNGrams.append({
+            "value": ngram,
+            "count": converted_weights[i],
+        })    
+    return mostCommonNGrams
 
 
 #RECOMMENDATION
@@ -182,15 +197,14 @@ def recommend_keyed_vectors(unigrams: list, similarities: pd.DataFrame, number: 
 
 
 # RECOMMENDATION
+#RECOMMENDATION BASED ON LAST WORD
 def recommend_bigrams(bigrams_input: list, bigram_df: pd.DataFrame, number:int):
 
-    #RECOMMENDATION BASED ON LAST WORD
     last_word = bigrams_input[len(bigrams_input)-1][1]
     next_words = next_words_dict(last_word, bigram_df, number)
-    final_dict = create_dict_recursively(next_words, number, 2, bigram_df)
-    recommendations = []
-    d = flatten_dict(final_dict)
-    strings = convert_dict_to_list(d)
+    recommendations_dict = create_dict_recursively(next_words, number, 2, bigram_df)
+    flat_dict = flatten_dict(recommendations_dict)
+    strings = convert_dict_to_list(flat_dict)
     return strings
 
 

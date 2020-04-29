@@ -4,31 +4,14 @@ import Cloud from './Cloud'
 
 export default class SentimentRecommendations extends React.Component {
 
-
     constructor(props){
         super(props)
 
-        this.createTableBigrams = this.createTableBigrams.bind(this)
+        this.onCloudClick = this.onCloudClick.bind(this)
     }
 
-    createTable(content){
-        return
-        let words = []
-        let weights = content.weights
-        let words_list = content.words
-        words_list.forEach(word => {
-            words.push(<td key = {word}>{word}</td>)
-        });
-        return words
-    }
-
-    createTableBigrams(content){
-        return
-        let words = []
-        content.forEach(word => {
-            words.push(<td key = {word}>{word}</td>)
-        });
-        return words
+    onCloudClick(word){
+        this.props.onCloudClick(word)
     }
 
     render() {
@@ -43,25 +26,29 @@ export default class SentimentRecommendations extends React.Component {
                 Most Common Words: 
 
                 <br/>
-                {/* <Cloud type={"bigrams"} sentiment={this.props.sentiment} data={this.props.mostCommonBigrams}/> */}
-                {/* <Cloud type={"words"} sentiment={this.props.sentiment} data={this.props.mostCommonWords}/> */}
-                <table>
-                    {this.props.mostCommonWords >0 ? 
-                        this.createTable(this.props.mostCommonWords) :
-                        null}
-                </table>
 
-                <br/>
+                {this.props.mostCommonBigrams  ? 
+                        <Cloud 
+                            type={"bigrams"}
+                            sentiment={this.props.sentiment}
+                            data={this.props.mostCommonBigrams}
+                            onClick={this.onCloudClick}/> :
+                        null}
+
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
                 <br/>
                 
                 Most Common Bigrams:
 
-                <br/>
-                <table>
-                    {this.props.mostCommonBigrams != null ? 
-                        this.createTableBigrams(this.props.mostCommonBigrams) :
+
+                {this.props.mostCommonWords  ? 
+                        <Cloud 
+                            type={"words"}
+                            sentiment={this.props.sentiment}
+                            data={this.props.mostCommonWords}
+                            onClick={this.onCloudClick}/> :
                         null}
-                </table>
+                
             </div>
         )
     }

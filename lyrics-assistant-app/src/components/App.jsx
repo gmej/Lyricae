@@ -32,6 +32,7 @@ export default class App extends React.Component {
         this.call_api_sentiment = this.callApiSelectSentiment.bind(this)
         this.selectNSimilarWords = this.selectNSimilarWords.bind(this)
         this.selectNBigramsRecommendations = this.selectNBigramsRecommendations.bind(this)
+        this.onCloudClick = this.onCloudClick.bind(this)
     }
 
     componentDidUpdate(){
@@ -166,6 +167,15 @@ export default class App extends React.Component {
         this.callApi()
     }
 
+
+    onCloudClick(word){
+        let copyVerses = this.state.verses
+        copyVerses[this.state.selectedVerse] = copyVerses[this.state.selectedVerse].trim()+ " " + word
+        this.setState({
+            verses: copyVerses
+        })
+        this.callApi()
+    }
     //TODO renders twice
     render() {
         let lines = ["Welcome to the lyrics assistant app!", 
@@ -195,6 +205,7 @@ export default class App extends React.Component {
                         nextNBigrams={this.state.nextNBigrams}
                         selectNSimilarWords={this.selectNSimilarWords}
                         selectNBigramsRecommendations={this.selectNBigramsRecommendations}
+                        onCloudClick={this.onCloudClick}
                     />
                 </div>
             </div>
