@@ -4,7 +4,6 @@ import lyricwikia
 import argparse
 import sys
 import os
-import shutil  # high level operations on files (copying and removing)
 
 import pandas
 
@@ -45,7 +44,6 @@ def count_songs(file_path):
 
 def create_output_dir():
     if os.path.exists(LYRICS_PATH) and os.path.isdir(LYRICS_PATH):
-        #shutil.rmtree(path)
         return
     os.makedirs(LYRICS_PATH)
 

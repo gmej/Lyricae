@@ -4,7 +4,7 @@ import Header from './Header'
 import SentimentSelector from './SentimentSelector'
 import Recommendations from './Recommendations'
 
-//import '../assets/styles/App.css'
+import '../assets/styles/App.css'
 
 
 export default class App extends React.Component {
@@ -32,10 +32,10 @@ export default class App extends React.Component {
         this.call_api_sentiment = this.callApiSelectSentiment.bind(this)
         this.selectNSimilarWords = this.selectNSimilarWords.bind(this)
         this.selectNBigramsRecommendations = this.selectNBigramsRecommendations.bind(this)
-        this.onCloudClick = this.onCloudClick.bind(this)
+        this.onWordClick = this.onWordClick.bind(this)
     }
 
-    componentDidUpdate(){
+    componentDidUpdate(){/* 
         console.log('-------------------------------------')
         console.log("mostCommonWords: ", this.state.mostCommonWords)
         console.log("mostCommonBigrams: ", this.state.mostCommonBigrams)
@@ -45,7 +45,7 @@ export default class App extends React.Component {
         console.log("sentiment: ", this.state.sentiment)
         console.log("nSimilarWords: ", this.state.nSimilarWords)
         console.log("nNextBigrams: ", this.state.nNextBigrams)
-        console.log("nextBigrams: ", this.state.nextBigrams)
+        console.log("nextBigrams: ", this.state.nextBigrams) */
     }
 
     async callApi() {
@@ -168,9 +168,16 @@ export default class App extends React.Component {
     }
 
 
-    onCloudClick(word){
+    onWordClick(word){
         let copyVerses = this.state.verses
-        copyVerses[this.state.selectedVerse] = copyVerses[this.state.selectedVerse].trim()+ " " + word
+        let currentVerse = copyVerses[this.state.selectedVerse].trim()
+        let newVerse = ""
+        if(currentVerse.length == 0){
+            newVerse = word
+        } else {
+            newVerse = currentVerse + " " + word
+        }
+        copyVerses[this.state.selectedVerse] = newVerse
         this.setState({
             verses: copyVerses
         })
@@ -178,37 +185,32 @@ export default class App extends React.Component {
     }
     //TODO renders twice
     render() {
-        let lines = ["Welcome to the lyrics assistant app!", 
-            " Select the sentiment you are feeling in the lyrics you want to write and start witing the first verse.", 
-            "You can see the recommendations on the right side of this app based on the selected sentiment",
-            "You will see more recommendations based on your verse once you start writing!",
-            "Good luck and nice lyric creation"]
         return(
-            <div className="myApp">
-                <div className="input">
-                    <Header className="header" lines = {lines} />
-                    <SentimentSelector className="sentimentSelector" selectSentiment={this.selectSentiment} />
-                    <WritingSpace className="writingSpace"
-                        verses={this.state.verses} 
-                        selected={this.state.selectedVerse}
-                        write={this.write}
-                        selectVerse = {this.selectVerse}
-                        newVerse={this.newVerse}
-                    />
+            <div className="general">
+                <Header/>
+                <div className="myApp">
+                    <div className="input">
+                        <SentimentSelector selectSentiment={this.selectSentiment} />
+                        <WritingSpace
+                            verses={this.state.verses} 
+                            selected={this.state.selectedVerse}
+                            write={this.write}
+                            selectVerse = {this.selectVerse}
+                            newVerse={this.newVerse}
+                            />
+                    </div>
+                        <Recommendations 
+                            sentiment={this.state.sentiment}
+                            mostCommonWords={this.state.mostCommonWords}
+                            mostCommonBigrams={this.state.mostCommonBigrams}
+                            mostSimilarWords={this.state.mostSimilarWords}
+                            nextNBigrams={this.state.nextNBigrams}
+                            selectNSimilarWords={this.selectNSimilarWords}
+                            selectNBigramsRecommendations={this.selectNBigramsRecommendations}
+                            onWordClick={this.onWordClick}
+                            />
+                    </div>
                 </div>
-                <div className="recommendations">
-                    <Recommendations  className="recommendations"
-                        sentiment={this.state.sentiment}
-                        mostCommonWords={this.state.mostCommonWords}
-                        mostCommonBigrams={this.state.mostCommonBigrams}
-                        mostSimilarWords={this.state.mostSimilarWords}
-                        nextNBigrams={this.state.nextNBigrams}
-                        selectNSimilarWords={this.selectNSimilarWords}
-                        selectNBigramsRecommendations={this.selectNBigramsRecommendations}
-                        onCloudClick={this.onCloudClick}
-                    />
-                </div>
-            </div>
         )
     }
 }

@@ -7,11 +7,11 @@ export default class SentimentRecommendations extends React.Component {
     constructor(props){
         super(props)
 
-        this.onCloudClick = this.onCloudClick.bind(this)
+        this.onWordClick = this.onWordClick.bind(this)
     }
 
-    onCloudClick(word){
-        this.props.onCloudClick(word)
+    onWordClick(word){
+        this.props.onWordClick(word)
     }
 
     render() {
@@ -21,34 +21,26 @@ export default class SentimentRecommendations extends React.Component {
 
         return(
             <div>
-                <br/>
-
-                Most Common Words: 
-
-                <br/>
-
-                {this.props.mostCommonBigrams  ? 
+                <div className="box">
+                    {this.props.mostCommonBigrams  ? 
                         <Cloud 
-                            type={"bigrams"}
-                            sentiment={this.props.sentiment}
-                            data={this.props.mostCommonBigrams}
-                            onClick={this.onCloudClick}/> :
-                        null}
-
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-                <br/>
-                
-                Most Common Bigrams:
-
-
-                {this.props.mostCommonWords  ? 
+                        type={"bigrams"}
+                        sentiment={this.props.sentiment}
+                        data={this.props.mostCommonBigrams}
+                        onWordClick={this.onWordClick}/> :
+                        null
+                    }
+                </div>
+                <div className="box">
+                    {this.props.mostCommonWords  ? 
                         <Cloud 
                             type={"words"}
                             sentiment={this.props.sentiment}
                             data={this.props.mostCommonWords}
-                            onClick={this.onCloudClick}/> :
-                        null}
-                
+                            onWordClick={this.onWordClick}/> :
+                        null
+                    }
+                </div>
             </div>
         )
     }

@@ -1,0 +1,14 @@
+
+.selectedInput {
+    background-color: #f4acb7;
+    width: 100%;
+}
+
+.unselectedInput {
+    background-color: #ffcad4;
+    width: 100%;
+}
+
+.verse {
+    width: 100%;
+}

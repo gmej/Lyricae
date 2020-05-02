@@ -4,7 +4,6 @@ from nltk.corpus import stopwords
 import string
 import pandas as pd
 import random
-import types
 #from sentiments import SENTIMENTS
 
 DATAFRAME_PATH = "../../dataframes/"
@@ -131,7 +130,7 @@ def convert_dict_to_list(d):
             strings.append(k + ' ' + el)
     return strings
 
-def convert_values_to_new_range(values: list, new_min: float = 10, new_max: float = 70):
+def convert_values_to_new_range(values: list, new_min: float = 15, new_max: float = 40):
     old_min = min(values)
     old_max = max(values)
     old_range = (old_max - old_min)  
@@ -162,9 +161,8 @@ def recommend_most_common_words(unigram_df: pd.DataFrame) -> list:
 
 #RECOMMENDATION
 def recommend_most_common_ngrams(ngram_df: pd.DataFrame) -> list:
-    N_NGRAM_RECOMMENDATIONS = 30
+    N_NGRAM_RECOMMENDATIONS = 50
     ngram_df = ngram_df.nlargest(N_NGRAM_RECOMMENDATIONS, 'weight')
-    print(ngram_df)
     word1_list = ngram_df['word1'].tolist()
     word2_list = ngram_df['word2'].tolist()
     weights_list = ngram_df['weight'].tolist()
@@ -187,7 +185,7 @@ def recommend_keyed_vectors(unigrams: list, similarities: pd.DataFrame, number: 
     for word in unigrams:
         if word in similarities:
             column_series = similarities[word]
-            most_similar = column_series.sort_values(ascending=False).nlargest(number)
+            most_similar = column_series.sort_values(ascending=False).nlargest(number+1)
             most_similar_words = most_similar.index.values.tolist()
             if(most_similar_words[0] == word):
                 most_similar_words.pop(0)
@@ -199,6 +197,8 @@ def recommend_keyed_vectors(unigrams: list, similarities: pd.DataFrame, number: 
 # RECOMMENDATION
 #RECOMMENDATION BASED ON LAST WORD
 def recommend_bigrams(bigrams_input: list, bigram_df: pd.DataFrame, number:int):
+    if(len(bigrams_input) <1):
+        return
 
     last_word = bigrams_input[len(bigrams_input)-1][1]
     next_words = next_words_dict(last_word, bigram_df, number)
@@ -241,8 +241,11 @@ def get_recommendations(sentiment: str, user_input: str, n_similar_words: int, n
     most_similar_words = recommend_keyed_vectors(unigrams_input, similarities_df, n_similar_words)
 
     if(len(n_words) < 2):
+        next_bigrams = recommend_bigrams(unigrams_input, bigram_df, n_next_bigrams)
+        
         return {
         'most_similar_words': most_similar_words,
+            'next_bigrams': next_bigrams
         }
     else:
         next_bigrams = recommend_bigrams(bigrams_input, bigram_df, n_next_bigrams)

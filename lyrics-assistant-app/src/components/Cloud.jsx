@@ -3,42 +3,39 @@ import { TagCloud } from 'react-tagcloud'
 
 import "../assets/styles/Cloud.css"
 
-let divStyle = {
-    "height": "200px",
-    "width": "40%",
-    "background-color": "powderblue",
-    "float": "right",
-  }
 
 export default class Cloud extends React.Component {
 
 
 
+colorOptions = {
+    luminosity: 'bright',
+    hue: '#ffcad4',
+    /* count: 15 */
+}
+
 constructor(props){
     super(props)
 
-    this.onClick = this.onClick.bind(this)
+    this.onWordClick = this.onWordClick.bind(this)
 }
 
-onClick(word){
-    this.props.onClick(word)
+onWordClick(word){
+    this.props.onWordClick(word)
 }
 
-// minSize, maxSize - font size in px
-// tags - array of objects with properties value and count
-// shuffle - indicates if data should be shuffled (true by default)
-// onClick event handler has `tag` and `event` parameter
 render(){
     return(
-        <div style={divStyle}>
-            <h1>Most common {this.props.type} for sentiment: {this.props.sentiment}</h1>
+        <div className="cloud">
+            <div className="cloudTitle">Most common {this.props.type} for sentiment: {this.props.sentiment}</div>
             <TagCloud
-            minSize={12}
-            maxSize={55}
+            minSize={18}
+            maxSize={60}
             shuffle={true}
             tags={this.props.data}
             className="simple-cloud"
-            onClick={tag => this.onClick(tag.value)}
+            onClick={tag => this.onWordClick(tag.value)}
+            colorOptions={this.colorOptions}
             />
         </div>
         )

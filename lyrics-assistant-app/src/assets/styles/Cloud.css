@@ -2,3 +2,17 @@
 .simple-cloud .tag-cloud-tag {
   cursor: pointer;
 }
+
+/* .cloud {
+  background-color: #ffcad4;
+} */
+
+.cloudTitle {
+
+  padding: 10px;
+  font-size: 2em;
+  font-weight: 400;
+  font-family: "Lucida Console", Monaco, monospace;
+  text-align: center;
+
+}

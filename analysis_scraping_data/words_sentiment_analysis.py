@@ -1,8 +1,6 @@
 from nltk.util import bigrams
 import pandas as pd
-import numpy as np
 import os
-import time
 import string
 from functions.lyrics_functions import *
 from progress.bar import Bar # progress bar
@@ -277,7 +275,7 @@ def main():
     df = read_csv_as_df(LYRICS_DATASET_PATH)
 
     lyrics_df,  lyrics_list, empty_lyrics = get_lyrics_df()
-    df_with_lyrics = insert_column_to_df(df, "Lyric", lyrics_list, 3)
+    df_with_lyrics = insert_column_to_df(df, "Lyric", lyrics_list, 4)
 
     FINAL_NUMBER_OF_SONGS = INITIAL_NUMBER_OF_SONGS - len(empty_lyrics)
     
@@ -286,6 +284,8 @@ def main():
     print("TOTAL SONGS: ", len(df_with_lyrics.index))
      
     
+    df_with_lyrics.to_csv(DATAFRAME_PATH + "initial_dataframe.csv")
+    exit()
     # ----------------------------------
     # ------------ word bags -----------
     # ----------------------------------

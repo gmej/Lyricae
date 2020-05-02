@@ -1,0 +1,48 @@
+.header {
+    display: flex;
+    background-color: #9d8189;
+    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 24px;
+
+}
+
+
+.izquierda {
+    padding: 2px;
+    margin: 1px;
+    width: 80%;
+}
+
+.derecha {
+    padding: 2px;
+    margin: 1px;
+    justify-content: space-around;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.title {
+    padding: 10px;
+    font-size: 1.8em;
+    font-weight: 600;
+    font-family: "Lucida Console", Monaco, monospace	
+    ;
+}
+
+.icon{
+    width: 50px;
+}
+
+.lema {
+
+    font-size: 1.125em;
+    font-style: italic;
+}
+
+.line {
+    padding: 3px
+}

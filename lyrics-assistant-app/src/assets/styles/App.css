@@ -1,10 +1,54 @@
 
+
+* {
+
+  font-family: monospace;
+}
+
+  /* LAYOUT */
+.general {
+  display: flex;
+  justify-content: center;
+  /* background-color: #ffe5d9; */
+  flex-direction: column;
+  }
+  
+
 .myApp {
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
+  /* background-color: bisque; */
 }
 
 .input {
-  display: flex;
-  flex-direction: column;
+  background-color: #d8e2dc;
+  padding: 4px;
+  margin: 5px;
+  width: 20%;
+  border: 3px dotted #9d8189;
+  border-radius: 0px 24px 0px 0px;
+}
+
+.recommendations {
+  background-color: #d8e2dc;
+  padding: 4px;
+  margin: 5px;
+  width: 80%;
+  border: 6px ridge #9d8189;
+  border-radius: 24px 24px 0px 0px;
+    /* width: 70%;*/
+}
+
+
+/* CONTAINERS */
+
+
+.box {
+  background-color:#ffe5d9;
+  padding: 10px;
+  margin: 8px;
+  overflow: ellipsis;
+  border: 1px ridge #9d8189;
+  border-radius: 24px;
+  /* width: 70%;*/
 }

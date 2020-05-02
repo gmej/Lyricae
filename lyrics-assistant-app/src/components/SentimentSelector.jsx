@@ -21,17 +21,19 @@ export default class SentimentSelector extends React.Component {
       render() {
         let text = "Your sentiment to write about: "
         return (
-          <form>
-            <label>
-            {text}
-              <select value={this.state.value} onChange={this.handleChange}>
-                <option value={sentiments.happy}>{sentiments.happy}</option>
-                <option value={sentiments.angry}>{sentiments.angry}</option>
-                <option value={sentiments.relaxed}>{sentiments.relaxed}</option>
-                <option value={sentiments.sad}>{sentiments.sad}</option>
-              </select>
-            </label>
-          </form>
+          <div className="box">
+            <form>
+              <label>
+              {text}
+                <select value={this.state.value} onChange={this.handleChange}>
+                  <option value={sentiments.happy}>{sentiments.happy}</option>
+                  <option value={sentiments.angry}>{sentiments.angry}</option>
+                  <option value={sentiments.relaxed}>{sentiments.relaxed}</option>
+                  <option value={sentiments.sad}>{sentiments.sad}</option>
+                </select>
+              </label>
+            </form>
+          </div>
         );
       }
 }

@@ -28,7 +28,7 @@ export default class WritingSpace extends React.Component {
         let renderVerses = verses.map((verse, index) => {
             let key = "verse" + index
             return(
-                <Verse key={key}
+                <Verse
                     id={index}
                     text={verse}
                     write={this.write}
@@ -41,8 +41,8 @@ export default class WritingSpace extends React.Component {
 
         
         return(
-            <div>
-                <p>Verses: </p>
+            <div className="box">
+                <div>Write here:</div>
                 {renderVerses}
                 <input 
                     type="button"

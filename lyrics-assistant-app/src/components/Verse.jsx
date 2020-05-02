@@ -1,5 +1,8 @@
 import React from 'react'
 
+
+import '../assets/styles/Input.css'
+
 export default class Verse extends React.Component {
 
     constructor(props) {
@@ -19,10 +22,10 @@ export default class Verse extends React.Component {
     
     render() {
         return(
-            <div id={this.props.id}>
-                <input 
-                    autofocus={this.props.selected ? "autofocus" : null}
-                    className={this.props.selected ? "selected" : "unselected"}
+            <div className="verse">
+                <input /* className="input" */
+                    className={this.props.selected ? "selectedInput" : "unselectedInput"}
+                    autoFocus={this.props.selected ? "autofocus" : null}
                     type="text"
                     id={this.props.key}
                     name={this.props.key}
