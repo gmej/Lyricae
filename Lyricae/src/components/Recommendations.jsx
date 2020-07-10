@@ -1,7 +1,7 @@
 import React from 'react'
 import SentimentRecommendations from './SentimentRecommendations'
 import UserInputRecommendations from './UserInputRecommendations'
-import '../assets/styles/Recommendations.css'
+//import '../assets/styles/Recommendations.css'
 
 export default class Recommendations extends React.Component {
     constructor(props){

@@ -1,6 +1,6 @@
 SHELL
 
-cd lyrics-assistant-app
+cd Lyricae
 export FLASK_APP=api.py
 npm run start-api
 
@@ -8,6 +8,6 @@ npm run start-api
 
 SHELL
 
-cd lyrics-assistant-app
+cd Lyricae
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 npm start

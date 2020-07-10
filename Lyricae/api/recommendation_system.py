@@ -202,7 +202,7 @@ def recommend_bigrams(bigrams_input: list, bigram_df: pd.DataFrame, number:int):
 
     last_word = bigrams_input[len(bigrams_input)-1][1]
     next_words = next_words_dict(last_word, bigram_df, number)
-    recommendations_dict = create_dict_recursively(next_words, number, 2, bigram_df)
+    recommendations_dict = create_dict_recursively(next_words, number, 3, bigram_df)
     flat_dict = flatten_dict(recommendations_dict)
     strings = convert_dict_to_list(flat_dict)
     return strings

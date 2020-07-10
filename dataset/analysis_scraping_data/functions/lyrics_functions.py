@@ -13,7 +13,7 @@ def open_lyric_from_path(file_path: str) -> str:
 
 def open_lyric_from_index(index: str) -> str:
     try:
-        f = open('./lyrics_lyricwikia/' + index)
+        f = open('../lyrics_lyricwikia/' + index)
         return f.read()
     except FileNotFoundError:
         return None

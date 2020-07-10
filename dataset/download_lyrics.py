@@ -83,7 +83,7 @@ def err(msg):
 
 
 if __name__ == '__main__':
-    totalTitles = count_songs(args.input or "datasets/MoodyLyrics.csv")
+    totalTitles = count_songs(args.input or "lyrics_dataset/MoodyLyrics.csv")
     print(str(totalTitles) + ' canciones')
 
     # Create output directory
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     errorCount = 0
     bar = Bar('Downloading lyrics', max = int(totalTitles))
     #for lyric in lyric_entries_generator(args.input):
-    for lyric in lyric_entries_generator('datasets/MoodyLyrics.csv'):
+    for lyric in lyric_entries_generator('lyrics_dataset/MoodyLyrics.csv'):
         if not download_lyric(lyric):
             errorCount += 1
         count +=1

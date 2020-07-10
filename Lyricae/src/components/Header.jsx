@@ -11,11 +11,11 @@ export default class Header extends React.Component {
         let lema = "\"Music is the language of the soul\""
         let lines = [
             "Instructions: ", 
-            "1. Select the sentiment you are feeling in the lyrics you want to write and start witing the first verse.", 
+            "1. Select the sentiment you are feeling in the lyrics you want to write and start writing the first verse.", 
             "2. Start writing on the left side!",
             "",
             "You can see the recommendations on the right side of this app based on the selected sentiment",
-            "You will see more recommendations based on your verse once you start writing!"
+            "You will see more recommendations based on what you write"
         ]
         let renderlines = lines.map((line, index) => {
             return(

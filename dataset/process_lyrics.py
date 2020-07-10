@@ -2,7 +2,7 @@ from nltk.util import bigrams
 import pandas as pd
 import os
 import string
-from functions.lyrics_functions import *
+from analysis_scraping_data.functions.lyrics_functions import *
 from progress.bar import Bar # progress bar
 
 
@@ -12,8 +12,8 @@ MINIMUM_WORD_REPETITION = 50
 MINIMUM_BIGRAM_REPETITION = 4
 FINAL_NUMBER_OF_SONGS = INITIAL_NUMBER_OF_SONGS
 
-DATAFRAME_PATH = "./dataframes/"
-LYRICS_DATASET_PATH = './datasets/MoodyLyrics.csv'
+DATAFRAME_PATH = "../dataframes/"
+LYRICS_DATASET_PATH = '../lyrics_dataset/MoodyLyrics.csv'
 
 def read_csv_as_df(path: str) -> pd.DataFrame:    
     csv_df = pd.read_csv(path, na_values=['.'], dtype={'Index': str, 'Artist': str, 'Song': str, 'Emotion': str})
@@ -28,10 +28,10 @@ def insert_column_to_df(df: pd.DataFrame, name: str, values: list, pos: int) -> 
 def get_lyrics_df(mode: int = 1) -> pd.DataFrame:
     global INITIAL_NUMBER_OF_SONGS
     
-    NUMBER_OF_SONGS_IN_FOLDER = len(os.listdir('./lyrics_lyricwikia/'))
+    NUMBER_OF_SONGS_IN_FOLDER = len(os.listdir('../lyrics_lyricwikia/'))
     if(INITIAL_NUMBER_OF_SONGS > NUMBER_OF_SONGS_IN_FOLDER):
         INITIAL_NUMBER_OF_SONGS = NUMBER_OF_SONGS_IN_FOLDER
-    
+    print('INITIAL_NUMBER_OF_SONGS: ', INITIAL_NUMBER_OF_SONGS)
     lyrics_list = []
     empty_lyrics = []
     data = []
@@ -128,7 +128,7 @@ def get_words_complete_data(emotion_df: pd.DataFrame) -> pd.DataFrame:
     word_repetitions = get_gram_repetitions(emotion_word_counter)
     weights = calculate_weights(file_ocurrences, word_repetitions)
     
-    # Check for error in word repetitions and file ocurrences
+    # Checks for error in word repetitions and file ocurrences
     for word in word_repetitions:
         if(file_ocurrences[word] > word_repetitions[word]):
             print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!1', word, file_ocurrences[word], word_repetitions[word] )
@@ -155,6 +155,10 @@ def get_all_emotions_bags(df: pd.DataFrame):
     print('\n\n--------RELAXED--------')
     print("RELAXED SONGS: ", RELAXED_SONGS_COUNT)
     print(relaxed_unigram_data.head(25))
+    print('\n\n--------RELAXED--------')
+    print(relaxed_unigram_data.sort_values(by="totalRepetitions", ascending=False).head(25))
+    print('\n\n--------RELAXED--------')
+    print(relaxed_unigram_data.sort_values(by="fileOcurrences", ascending=False).head(25))
     relaxed_unigram_data.to_csv(DATAFRAME_PATH + "relaxed_unigram_data.csv")
 
 
@@ -173,6 +177,10 @@ def get_all_emotions_bags(df: pd.DataFrame):
     print('\n\n--------HAPPY--------')
     print("HAPPY SONGS: ", HAPPY_SONGS_COUNT)
     print(happy_unigram_data.head(25))
+    print('\n\n--------HAPPY--------')
+    print(happy_unigram_data.sort_values(by="totalRepetitions", ascending=False).head(25))
+    print('\n\n--------HAPPY--------')
+    print(happy_unigram_data.sort_values(by="fileOcurrences", ascending=False).head(25))
     
     happy_unigram_data.to_csv(DATAFRAME_PATH + "happy_unigram_data.csv")
 
@@ -285,13 +293,13 @@ def main():
      
     
     df_with_lyrics.to_csv(DATAFRAME_PATH + "initial_dataframe.csv")
-    exit()
+
     # ----------------------------------
     # ------------ word bags -----------
     # ----------------------------------
     
 
-    #get_all_emotions_bags(df_with_lyrics)
+    get_all_emotions_bags(df_with_lyrics)
     
     
     # ----------------------------------
@@ -310,14 +318,12 @@ def main():
     print(df_with_lyrics)
 
 
-    get_all_emotion_bigrams(df_with_lyrics)
+    #get_all_emotion_bigrams(df_with_lyrics)
 
     # ----------------------------------
     # ----------------------------------
     # ----------------------------------
     
-
-
 
 
 

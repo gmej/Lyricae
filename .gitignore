@@ -1,13 +1,9 @@
 # Guillermo Mejias Izquierdo @ ETSIT-UPM
-
-pandas_amazon_example/
-lyrics_lyricwikia/
-lyrics_lyricwikia_old/
-datasets/big_dataset/
+dataset/lyrics_lyricwikia/
 
 #app
 
-lyrics-assistant-app/node_modules
+Lyricae/node_modules
 
 # dependencies
 /node_modules
