@@ -16,6 +16,8 @@ In order to create the database, you will only need Python 3.7.
 
 #### Linux prerequisites
 
+Run this commands to install python 3 and nodeJS:
+
 ```
 $ sudo apt-get update
 $ sudo apt-get install python3.7
@@ -25,26 +27,62 @@ $ sudo apt-get install npm
 
 The project was developed in the specified versions , and it has not been tested with previous versions in which it might work as well.
 
-<!-- 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+First of all, install python requirements from the root folder:
 
 ```
-Give the example
+pip install -r requirements.txt
 ```
 
-And repeat
+#### Application
+
+NOTE: See deployment to know how to get the application deployed with docker.
+
+To run the API:
 
 ```
-until finished
+cd Lyricae
+export FLASK_APP=api.py
+npm run start-api
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+To run the web server:
+
+```
+cd Lyricae
+npm start
+```
+
+If ypu get the error "System limit for number of file watchers reached", run the next command before starting the web server:
+
+```
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
+#### Database creation
+
+NOTE: These scripts take some minutes to finish.
 
 
+1. DOWNLOAD LYRICS: Run "donwload_lyrics.py" to automatically donwload all the songs of the .csv file in the folder "/lyrics_dataset". This lyrics will be downloaded to "/lyrics_lyricwikia":
+
+```
+python donwload_lyrics.py
+```
+
+2. PROCESS LYRICS: Run "process_lyrics.py" to process the lyrics and create the dataset for the recommendation engine:
+
+```
+python process_lyrics.py
+```
+
+3. POSTPROCESS LYRICS: Run "postprocess.py" to filter words in other languages other than English, as some of them are in Spanish:
+
+
+
+
+<!-- 
 
 ## Deployment
 

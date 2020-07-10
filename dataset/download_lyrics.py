@@ -92,7 +92,6 @@ if __name__ == '__main__':
     count = 0
     errorCount = 0
     bar = Bar('Downloading lyrics', max = int(totalTitles))
-    #for lyric in lyric_entries_generator(args.input):
     for lyric in lyric_entries_generator('lyrics_dataset/MoodyLyrics.csv'):
         if not download_lyric(lyric):
             errorCount += 1
