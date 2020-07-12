@@ -1,5 +1,4 @@
 import React from 'react'
-import Selector from './Selector'
 import Cloud from './Cloud'
 
 export default class SentimentRecommendations extends React.Component {

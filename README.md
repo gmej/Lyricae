@@ -39,7 +39,7 @@ pip install -r requirements.txt
 
 NOTE: See deployment to know how to get the application deployed with docker.
 
-To run the API:
+1. Run the API:
 
 ```
 cd Lyricae
@@ -47,7 +47,7 @@ export FLASK_APP=api.py
 npm run start-api
 ```
 
-To run the web server:
+2. Run the web server:
 
 ```
 cd Lyricae
@@ -78,6 +78,16 @@ python process_lyrics.py
 ```
 
 3. POSTPROCESS LYRICS: Run "postprocess.py" to filter words in other languages other than English, as some of them are in Spanish:
+
+```
+python postprocess.py
+```
+
+3. WORD SIMILARITIES: You need to donwload the Word2Vec model to "Word2Vec" directory to be able to run either "KeyedVectors.py" or the notebook "KeyedVectors.ipynb". This script calculates similarities between words in the dataframes created previously:
+
+```
+python KeyedVectors.py
+```
 
 
 

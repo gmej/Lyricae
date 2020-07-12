@@ -60,7 +60,7 @@ export default class App extends React.Component {
     }
 
     async callApiSelectSentiment(sentiment) {
-        if(sentiment == undefined) {
+        if(sentiment === undefined) {
             sentiment=this.state.sentiment
         }
 
@@ -85,13 +85,13 @@ export default class App extends React.Component {
     }
 
     async callApiRecommendFromText(text, nSimilarWords, nNextBigrams){
-        if(text == undefined) {
+        if(text === undefined) {
             text=this.state.text
         }
-        if(nSimilarWords == undefined) {
+        if(nSimilarWords === undefined) {
             nSimilarWords=this.state.nSimilarWords
         }
-        if(nNextBigrams == undefined) {
+        if(nNextBigrams === undefined) {
             nNextBigrams=this.state.nNextBigrams
         }
 
@@ -162,7 +162,7 @@ export default class App extends React.Component {
         let selected = copyVerses.length-1
         this.setState({
             verses: copyVerses,
-            selectedVerse: copyVerses.length-1
+            selectedVerse: selected
         })
         this.callApi()
     }
@@ -172,7 +172,7 @@ export default class App extends React.Component {
         let copyVerses = this.state.verses
         let currentVerse = copyVerses[this.state.selectedVerse].trim()
         let newVerse = ""
-        if(currentVerse.length == 0){
+        if(currentVerse.length === 0){
             newVerse = word
         } else {
             newVerse = currentVerse + " " + word

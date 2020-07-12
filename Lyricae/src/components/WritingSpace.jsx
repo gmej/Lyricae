@@ -26,7 +26,6 @@ export default class WritingSpace extends React.Component {
         let verses = this.props.verses
         //verses.push(" ")
         let renderVerses = verses.map((verse, index) => {
-            let key = "verse" + index
             return(
                 <Verse
                     id={index}

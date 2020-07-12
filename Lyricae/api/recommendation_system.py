@@ -6,7 +6,7 @@ import pandas as pd
 import random
 #from sentiments import SENTIMENTS
 
-DATAFRAME_PATH = "../../dataframes/"
+DATAFRAME_PATH = "../../dataset/dataframes/"
 
 def preprocess(lyric: str) -> list:
     lyric = lyric.lower()
