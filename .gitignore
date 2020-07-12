@@ -3,7 +3,7 @@ dataset/lyrics_lyricwikia/
 
 #app
 
-Lyricae/node_modules
+app/node_modules
 
 # dependencies
 /node_modules

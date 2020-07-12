@@ -29,20 +29,22 @@ The project was developed in the specified versions , and it has not been tested
 
 ### Installing
 
-First of all, install python requirements from the root folder:
+First of all, install python requirements and npm packages:
 
 ```
 pip install -r requirements.txt
+cd app
+npm install
 ```
 
 #### Application
 
-NOTE: See deployment to know how to get the application deployed with docker.
+NOTE: See deployment to k.now how to get the application deployed with docker. This application runs currently on a development server.
 
 1. Run the API:
 
 ```
-cd Lyricae
+cd app
 export FLASK_APP=api.py
 npm run start-api
 ```
@@ -50,7 +52,7 @@ npm run start-api
 2. Run the web server:
 
 ```
-cd Lyricae
+cd app
 npm start
 ```
 
